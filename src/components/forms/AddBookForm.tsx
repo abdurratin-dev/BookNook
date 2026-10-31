@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { CheckCircle2, ChevronDown, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { authClient } from "@/lib/auth-client";
+import { email } from "better-auth";
 
 const CATEGORIES = [
   "Fiction",
@@ -14,7 +16,7 @@ const CATEGORIES = [
 
 /** Demo values — replace with the authenticated session later if you want. */
 
-type Field = "title" | "author" | "category" | "image";
+type Field = "title" | "author" | "category" | "image" | "description";
 type Errors = Partial<Record<Field, string>>;
 
 const LABEL = "block text-sm font-medium text-slate-700";
@@ -29,16 +31,12 @@ export default function AddBookForm() {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [category, setCategory] = useState("");
-  const [img,setImg] = useState("")
-  const [preview, setPreview] = useState<string | null>(null);
+  const [image, setImage] = useState("");
+  const [description, setDescription] = useState("");
   const [errors, setErrors] = useState<Errors>({});
   const [success, setSuccess] = useState(false);
 
   // Revoke the object URL whenever the preview changes or the form unmounts.
-  useEffect(() => {
-    if (!preview) return;
-    return () => URL.revokeObjectURL(preview);
-  }, [preview]);
 
   useEffect(() => {
     if (!success) return;
@@ -48,43 +46,55 @@ export default function AddBookForm() {
 
   const setError = (field: Field, message?: string) =>
     setErrors((prev) => ({ ...prev, [field]: message }));
-
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+  const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
 
     const next: Errors = {};
     if (!title.trim()) next.title = "Book title is required.";
     if (!author.trim()) next.author = "Author name is required.";
     if (!category) next.category = "Please select a category.";
-    if (!img.trim()) next.image = "Please upload a cover image.";
+    if (!image.trim()) next.image = "Image url is required.";
+    if (!description.trim()) next.description = "Description is required.";
     setErrors(next);
-    if (Object.keys(next).length > 0) return;
+    if(!title.trim() ||  !author.trim() || !image.trim() || !category || !description.trim()){
+      console.log(description);
+      return;
+    }
 
+    const formData = {
+      title,
+      author,
+      category,
+      image,
+      description,
+      name: user?.name,
+      email : user?.email,
+    };
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books`,{
+      method: 'POST',
+      headers:{
+         "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+    const result = await res.json();
     // UI-only for now — swap this block for a POST to /api/books once it exists.
-    setSuccess(true);
     setTitle("");
     setAuthor("");
     setCategory("");
-    setPreview(null);
+    setImage("");
+    setDescription("");
+    setSuccess(true);
   };
-
   return (
     <form
       onSubmit={handleSubmit}
       noValidate
       className="rounded-2xl border border-black/[0.06] bg-white p-5 shadow-sm sm:p-6"
     >
-      {success && (
-        <div
-          role="status"
-          className="mb-5 flex items-center gap-2 rounded-lg border border-[#0d4d33]/20 bg-[#0d4d33]/10 px-4 py-3 text-sm font-medium text-[#0d4d33]"
-        >
-          <CheckCircle2 className="h-4 w-4 shrink-0" />
-          Book added to the library.
-        </div>
-      )}
-
       <div className="grid items-start gap-5 sm:grid-cols-2">
         {/* Book Title */}
         <div>
@@ -164,8 +174,15 @@ export default function AddBookForm() {
           <input
             id="book-image"
             type="text"
-            className={cn("mt-2", INPUT, PAD)}
+            value={image}
+            placeholder="Enter book image url"
+            onChange={(e) => {
+              setImage(e.target.value);
+              if (errors.image) setError("image");
+            }}
+            className={cn("mt-2", INPUT, PAD, errors.image && "border-red-400")}
           />
+          {errors.image && <p className={ERROR_TEXT}>{errors.image}</p>}
         </div>
 
         {/* User Name */}
@@ -175,7 +192,7 @@ export default function AddBookForm() {
           </label>
           <input
             id="user-name"
-            // value={DEMO_USER.name}
+            value={user?.name || ""}
             readOnly
             className={cn(
               "mt-2 cursor-not-allowed bg-slate-50 text-slate-500",
@@ -195,7 +212,7 @@ export default function AddBookForm() {
             <input
               id="user-email"
               type="email"
-              // value={DEMO_USER.email}
+              value={user?.email || ""}
               readOnly
               className={cn(
                 "cursor-not-allowed bg-slate-50 pl-9 pr-3.5 text-slate-500",
@@ -211,10 +228,26 @@ export default function AddBookForm() {
           <textarea
             name="description"
             id="description"
-            className={cn("mt-2",INPUT, PAD)}
+            rows={7}
+            value={description}
+            onChange={(e) => {
+              setDescription(e.target.value);
+              if (errors.description) setError("description");
+            }}
+            className={cn("mt-2", INPUT, PAD,errors.description && "border-red-400")}
           ></textarea>
+          {errors.description && <p className={ERROR_TEXT}>{errors.description}</p>}
         </div>
       </div>
+      {success && (
+        <div
+          role="status"
+          className="mb-5 flex items-center gap-2 rounded-lg border border-[#0d4d33]/20 bg-[#0d4d33]/10 px-4 py-3 text-sm font-medium text-[#0d4d33]"
+        >
+          <CheckCircle2 className="h-4 w-4 shrink-0" />
+          Book added to the library.
+        </div>
+      )}
 
       <button
         type="submit"

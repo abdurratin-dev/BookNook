@@ -60,7 +60,11 @@ export default function SignupPage() {
       password : formData.password,
       image : formData.image
     })
-    toast.success(`${formData.email} You are Successfully Sign Up`);
+    if(error){
+      toast.error(error?.message as string);
+      return;
+    }
+    toast.success(`${data?.user.email} You are Successfully Sign Up`);
   };
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#f3f5ef] p-4 sm:p-6">
