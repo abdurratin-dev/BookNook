@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter, Playfair_Display, Caveat } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Inter,
+  Playfair_Display,
+  Caveat,
+} from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { Toaster } from "react-hot-toast";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -38,9 +45,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", inter.variable, playfair.variable, caveat.variable)}
+      className={cn(
+        "h-full",
+        "antialiased",
+        geistSans.variable,
+        geistMono.variable,
+        "font-sans",
+        inter.variable,
+        playfair.variable,
+        caveat.variable,
+      )}
     >
       <body className="min-h-full flex flex-col">
+        <Toaster position="top-left" reverseOrder={true} />
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />

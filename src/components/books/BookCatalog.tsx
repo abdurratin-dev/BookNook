@@ -2,14 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { BookOpen, ChevronDown, ChevronLeft, ChevronRight, Search } from "lucide-react";
-import { allBooks, bookCategories, type Book } from "@/data/books";
 import BookCard from "@/components/cards/BookCard";
 
 const PER_PAGE = 9;
 
 type Filters = { query: string; category: string };
 
-function matches(book: Book, { query, category }: Filters) {
+function matches(book , { query, category }: Filters) {
   if (category !== "" && book.category !== category) return false;
   if (query === "") return true;
   
@@ -23,7 +22,8 @@ export default function BookCatalog() {
   const [page, setPage] = useState(1);
 
   const normalizedQuery = query.trim().toLowerCase();
-
+  const allBooks = [];
+  const bookCategories = [];
   const filtered = useMemo(
     () =>
       allBooks.filter((book) =>

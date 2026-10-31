@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { newArrivals } from "@/data/books";
 import BookCard from "../cards/BookCard";
 
 export default function NewArrivals() {
+  const newArrivals = []
   return (
     <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
       <div className="flex items-end justify-between gap-4">

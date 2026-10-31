@@ -1,53 +1,28 @@
-
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
+import { Form } from "@heroui/react";
 import {
   BookOpen,
   Eye,
   EyeOff,
   User,
   Mail,
-  Phone,
   LockKeyhole,
   Check,
 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import toast from "react-hot-toast";
 
-export default function RegisterPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-
-  // Password validation
-  const hasLength = password.length >= 8;
-  const hasUppercase = /[A-Z]/.test(password);
-  const hasNumber = /[0-9]/.test(password);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!hasLength || !hasUppercase || !hasNumber) {
-      return;
-    }
-
-    console.log({
-      name,
-      email,
-      phone,
-      password,
-    });
-  };
-
-  const Requirement = ({
-    valid,
-    children,
-  }: {
-    valid: boolean;
-    children: React.ReactNode;
-  }) => (
+function Requirement({
+  valid,
+  children,
+}: {
+  valid: boolean;
+  children: React.ReactNode;
+}) {
+  return (
     <div
       className={`flex items-center gap-2 text-xs ${
         valid ? "text-emerald-600" : "text-slate-400"
@@ -57,7 +32,36 @@ export default function RegisterPage() {
       <span>{children}</span>
     </div>
   );
+}
 
+export default function SignupPage() {
+  const [name,setName] = useState('');
+  const [email,setEmail] = useState('');
+  const [image,setImage] = useState('');
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Password validation
+  const hasLength = password.length >= 8;
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+
+  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = {
+      name,
+      email,
+      password,
+      image,
+    }
+    const {data,error} = await authClient.signUp.email({
+      name : formData.name,
+      email : formData.email,
+      password : formData.password,
+      image : formData.image
+    })
+    toast.success(`${formData.email} You are Successfully Sign Up`);
+  };
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#f3f5ef] p-4 sm:p-6">
 
@@ -111,7 +115,7 @@ export default function RegisterPage() {
               </div>
 
               <h2 className="font-serif text-3xl font-bold text-emerald-950">
-                Register
+                Sign Up
               </h2>
 
               <p className="mt-2 text-sm text-slate-400">
@@ -120,9 +124,8 @@ export default function RegisterPage() {
 
             </div>
 
-            {/* Register Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-
+            {/* Sign Up Form */}
+            <Form onSubmit={handleSubmit} className="space-y-4">
               {/* Name */}
               <div>
                 <label
@@ -142,7 +145,7 @@ export default function RegisterPage() {
                     id="name"
                     type="text"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e)=>setName(e.target.value)}
                     placeholder="Enter your name"
                     required
                     className="h-11 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-4 text-sm text-slate-700 outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/10"
@@ -168,36 +171,9 @@ export default function RegisterPage() {
                   <input
                     id="email"
                     type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
-                    required
-                    className="h-11 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-4 text-sm text-slate-700 outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/10"
-                  />
-                </div>
-              </div>
-
-              {/* Phone */}
-              <div>
-                <label
-                  htmlFor="phone"
-                  className="mb-1.5 block text-sm font-semibold text-slate-600"
-                >
-                  Phone No.
-                </label>
-
-                <div className="relative">
-                  <Phone
-                    size={16}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                  />
-
-                  <input
-                    id="phone"
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="Enter phone number"
+                    value={email}
+                    onChange={(e)=>setEmail(e.target.value)}
                     required
                     className="h-11 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-4 text-sm text-slate-700 outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/10"
                   />
@@ -259,16 +235,16 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* Register Button */}
+              {/* Sign Up Button */}
               <button
                 type="submit"
                 disabled={!hasLength || !hasUppercase || !hasNumber}
                 className="h-11 w-full rounded-lg bg-emerald-800 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-900 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Register
+                Sign Up
               </button>
 
-            </form>
+            </Form>
 
             {/* Divider */}
             <div className="my-5 flex items-center gap-4">

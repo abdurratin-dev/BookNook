@@ -1,41 +1,42 @@
-
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  BookOpen,
-  Eye,
-  EyeOff,
-  Mail,
-  LockKeyhole,
-} from "lucide-react";
+import { BookOpen, Eye, EyeOff, Mail, LockKeyhole } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    console.log({
+    const formData = {
       email,
       password,
+    };
+    const { data, error } = await authClient.signIn.email({
+      email: formData.email,
+      password: formData.password,
     });
+    console.log(data, error);
+    if (error) {
+     toast.error("Invalid Email OR Password")
+      return;
+    }
+    toast.success(`${formData.email} You are Successfully Loged In`)
   };
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#f3f5ef] p-4 sm:p-6">
-
       <div className="grid w-full max-w-6xl overflow-hidden rounded-2xl border border-emerald-900/10 bg-white shadow-xl md:min-h-[650px] md:grid-cols-[0.9fr_1.1fr]">
-
         {/* Left Side */}
         <section
           className="relative flex min-h-[260px] flex-col justify-center overflow-hidden bg-cover bg-center p-8 sm:p-12 md:min-h-full"
           style={{
-            backgroundImage:
-              "url('/images/booknook-login-illustration.png')",
+            backgroundImage: "url('/images/booknook-login-illustration.png')",
           }}
         >
           <div className="absolute inset-0 bg-emerald-950/25" />
@@ -53,12 +54,9 @@ export default function LoginPage() {
 
         {/* Right Side */}
         <section className="flex items-center justify-center px-6 py-10 sm:px-12 md:px-14 lg:px-16">
-
           <div className="w-full max-w-md">
-
             {/* Logo */}
             <div className="mb-8 text-center">
-
               <div className="mb-3 flex items-center justify-center gap-2">
                 <BookOpen
                   size={30}
@@ -78,12 +76,10 @@ export default function LoginPage() {
               <p className="mt-2 text-sm text-slate-400">
                 Enter your details to access your account.
               </p>
-
             </div>
 
             {/* Login Form */}
-            <form onSubmit={handleSubmit} className="space-y-5">
-
+            <form onSubmit={(e) => handleSubmit(e)} className="space-y-5">
               {/* Email */}
               <div>
                 <label
@@ -153,11 +149,7 @@ export default function LoginPage() {
                     }
                     className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-800"
                   >
-                    {showPassword ? (
-                      <EyeOff size={18} />
-                    ) : (
-                      <Eye size={18} />
-                    )}
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
               </div>
@@ -169,7 +161,6 @@ export default function LoginPage() {
               >
                 Login
               </button>
-
             </form>
 
             {/* Divider */}
@@ -211,7 +202,6 @@ export default function LoginPage() {
                   d="M24 12.1c3 0 5.7 1 7.8 3.1l5.8-5.8C34.1 6 29.5 4 24 4 16.2 4 9.4 8.5 6 15.2l6.6 5.1c1.6-4.8 6.1-8.2 11.4-8.2Z"
                 />
               </svg>
-
               Continue with Google
             </button>
 
@@ -219,16 +209,14 @@ export default function LoginPage() {
             <p className="mt-8 text-center text-sm text-slate-500">
               Don't have an account?{" "}
               <Link
-                href="/register"
+                href="/signup"
                 className="font-bold text-emerald-700 hover:underline"
               >
                 Register
               </Link>
             </p>
-
           </div>
         </section>
-
       </div>
     </main>
   );
