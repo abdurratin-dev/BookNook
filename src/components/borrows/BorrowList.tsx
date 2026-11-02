@@ -87,7 +87,7 @@ export default function BorrowList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [items, setItems] = useState<BorrowsListType[]>([]);
-  const router = useRouter()
+  const router = useRouter();
   const { data: session } = authClient.useSession();
   const user = session?.user;
   useEffect(() => {
@@ -155,7 +155,8 @@ export default function BorrowList() {
           </tr>
         </thead>
         <tbody>
-          {items.map((borrowing) => (
+          {items.map((borrowing) => {
+            return(
             <tr
               key={borrowing._id}
               className="border-b border-slate-50 transition-colors last:border-0 hover:bg-slate-50/70"
@@ -182,7 +183,7 @@ export default function BorrowList() {
                 />
               </td>
             </tr>
-          ))}
+          )})}
         </tbody>
       </table>
 

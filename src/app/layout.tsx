@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Toaster } from "react-hot-toast";
+import UserDataProvider from "@/context/userDataContext";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -57,10 +58,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       )}
     >
       <body className="min-h-full flex flex-col">
-        <Toaster position="top-left" reverseOrder={true} />
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <UserDataProvider>
+          <Toaster position="top-left" reverseOrder={true} />
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </UserDataProvider>
       </body>
     </html>
   );

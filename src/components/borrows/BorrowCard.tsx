@@ -1,19 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { X, ChevronDown } from "lucide-react";
+import { useContext, useState } from "react";
 import { Book } from "@/data/books";
 import toast from "react-hot-toast";
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogFooter,
-  DialogHeader,
   DialogTrigger,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { authClient } from "@/lib/auth-client";
+import { BookBdata, UserDataContext } from "@/context/userDataContext";
+import { BorrowsListType } from "@/types/borrowListType";
 
 type BorrowBookModalProps = {
   book: Book;
@@ -22,8 +21,8 @@ type BorrowBookModalProps = {
 export default function BorrowCard({ book }: BorrowBookModalProps) {
   const [borrowing, setBorrowing] = useState(false);
   const [days, setDays] = useState("7");
-  const [fieldError,setFieldError] = useState(false);
-
+  const [fieldError, setFieldError] = useState(false);
+  const contxt = useContext(UserDataContext);
   const { data: session } = authClient.useSession();
   const user = session?.user;
   const handleBorrow = async () => {
@@ -31,13 +30,27 @@ export default function BorrowCard({ book }: BorrowBookModalProps) {
       toast.error("Please sign in to borrow this book.");
       return;
     }
-    if (days === "7" || !days){
-        setFieldError(true);
+    if (days === "7" || !days) {
+      setFieldError(true);
+      return;
+    }
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/borrows`);
+      const data: BorrowsListType[] = await res.json();
+      const chackData = data.some(
+        (bookU) =>
+          bookU.bookId === book._id && bookU.receiveremail === user.email,
+      );
+      if (chackData) {
+        toast.error("You are already added this book on your Borrow list");
         return;
+      }
+    } catch (error) {
+      console.log(error);
     }
     setBorrowing(true);
     const date = new Date().toDateString().toString();
-    const {image,title,author,category,description,email} = book
+    const { image, title, author, category, description, email } = book;
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/borrows`, {
         method: "POST",
@@ -45,7 +58,7 @@ export default function BorrowCard({ book }: BorrowBookModalProps) {
         body: JSON.stringify({
           bookId: book?._id,
           bookowneremail: email,
-          receiveremail: user.email,
+          receiveremail: user?.email,
           image,
           title,
           author,
@@ -53,17 +66,17 @@ export default function BorrowCard({ book }: BorrowBookModalProps) {
           description,
           borrowsDate: date,
           returnDate: days,
-          status: "Active"
+          status: "Active",
         }),
       });
       if (!res.ok) throw new Error("Borrow failed");
       const result = await res.json();
       console.log(result);
-      toast.success(`${result} borrowed successfully.`);
     } catch {
       toast.error("Could not borrow this book right now.");
     } finally {
       setBorrowing(false);
+      toast.success(`${title} borrowed successfully.`);
     }
   };
   console.log(days);
@@ -72,12 +85,12 @@ export default function BorrowCard({ book }: BorrowBookModalProps) {
       <form>
         <DialogTrigger
           render={
-            <button
+            <Button
               type="button"
-              className="rounded-xl bg-[#0d4d33] px-8 py-3.5 text-sm font-bold text-white shadow-md shadow-[#0d4d33]/25 transition-all duration-300 hover:bg-[#126344] active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60"
+              className="h-10 rounded-xl bg-[#0d4d33] px-8 py-3.5 text-sm font-bold text-white shadow-md shadow-[#0d4d33]/25 transition-all duration-300 hover:bg-[#126344] active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60"
             >
               {"Borrow This Book"}
-            </button>
+            </Button>
           }
         />
         <DialogContent className="sm:max-w-lg">
@@ -132,10 +145,12 @@ export default function BorrowCard({ book }: BorrowBookModalProps) {
                     id="borrowingDate"
                     value={days}
                     onChange={(e) => setDays(e.target.value)}
-                    className={`h-[66px] w-full appearance-none rounded-xl border ${fieldError ? "border-red-500": "border-slate-200"} bg-white px-6 pr-12 text-base font-semibold text-slate-600 outline-none transition focus:border-[#0d4d33] focus:ring-2 focus:ring-[#0d4d33]/10`}
+                    className={`h-[66px] w-full appearance-none rounded-xl border ${fieldError ? "border-red-500" : "border-slate-200"} bg-white px-6 pr-12 text-base font-semibold text-slate-600 outline-none transition focus:border-[#0d4d33] focus:ring-2 focus:ring-[#0d4d33]/10`}
                   />
                 </div>
-              {fieldError && <p className="text-red-500 mt-2">Please select return date</p>}
+                {fieldError && (
+                  <p className="text-red-500 mt-2">Please select return date</p>
+                )}
               </div>
 
               {/* Action Buttons */}

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { CheckCircle2, ChevronDown, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
-import { email } from "better-auth";
 
 const CATEGORIES = [
   "Fiction",

@@ -16,6 +16,8 @@ import {
 import { authClient } from "@/lib/auth-client";
 import type { Book, BookReview } from "@/data/books";
 import BorrowCard from "../borrows/BorrowCard";
+import { Button } from "@heroui/react";
+import { EditBook } from "./editBooks";
 
 type Tab = "description" | "reviews";
 
@@ -335,7 +337,9 @@ export default function BookDetails({ bookId }: { bookId: string }) {
 
             {/* Actions */}
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <BorrowCard book={book}/>
+              {
+                book.email === user?.email ? <EditBook book={book} /> : <BorrowCard book={book}/>
+              }
             </div>
           </div>
         </div>
