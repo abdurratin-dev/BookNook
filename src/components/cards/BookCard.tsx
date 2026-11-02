@@ -12,7 +12,7 @@ export default function BookCard({ book }: { book: Book }) {
     <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-2.5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#0d4d33]/30 hover:shadow-xl hover:shadow-[#0d4d33]/10">
       {/* Book Cover */}
       <Link
-        href={`/all-books/${book.id}`}
+        href={`/all-books/${book._id}`}
         className="relative block aspect-[2/3] overflow-hidden rounded-xl bg-slate-100"
       >
         {failed ? (
@@ -24,7 +24,7 @@ export default function BookCard({ book }: { book: Book }) {
           </div>
         ) : (
           <Image
-            src={book.cover}
+            src={book?.image}
             alt={`${book.title} cover`}
             fill
             unoptimized
@@ -58,7 +58,7 @@ export default function BookCard({ book }: { book: Book }) {
 
         {/* View Details Button */}
         <Link
-          href={`/all-books/${book.id}`}
+          href={`/all-books/${book._id}`}
           className="mt-auto flex items-center justify-center gap-2 rounded-xl bg-[#0d4d33] px-3 py-2.5 text-xs font-bold text-white shadow-sm transition-all duration-300 hover:bg-[#126344] hover:shadow-md active:scale-95"
         >
           View Details

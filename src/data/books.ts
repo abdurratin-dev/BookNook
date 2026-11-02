@@ -1,10 +1,29 @@
-export type Book = {
-  id: string;
-  title: string;
-  author: string;
-  category: string;
-  cover: string;
-};
+export interface Book {
+  _id: string
+  title: string
+  author: string
+  category: string
+  image: string
+  description: string
+  name: string
+  email: string
+  /** Optional detail fields — rendered with sensible fallbacks when absent. */
+  pages?: number
+  language?: string
+  rating?: number
+  reviewCount?: number
+  createdAt?: string
+  creatDate?: string
+}
+
+export interface BookReview {
+  _id: string
+  userName: string
+  rating: number
+  comment: string
+  createdAt?: string
+}
+
 
 /** Swap this array for API data once the backend exposes a books endpoint. */
 

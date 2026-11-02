@@ -1,132 +1,62 @@
-
 "use client";
 
-import { useMemo, useState } from "react";
-
-type Book = {
-  id: number;
-  title: string;
-  author: string;
-  category: string;
-  date: string;
-  cover: string;
-};
-
-const initialBooks: Book[] = [
-  {
-    id: 1,
-    title: "Atomic Habits",
-    author: "James Clear",
-    category: "Self Help",
-    date: "May 10, 2025",
-    cover: "bg-orange-100 text-orange-700",
-  },
-  {
-    id: 2,
-    title: "Dune",
-    author: "Frank Herbert",
-    category: "Science Fiction",
-    date: "May 8, 2025",
-    cover: "bg-red-600 text-white",
-  },
-  {
-    id: 3,
-    title: "Clean Code",
-    author: "Robert C. Martin",
-    category: "Technology",
-    date: "May 5, 2025",
-    cover: "bg-blue-800 text-white",
-  },
-  {
-    id: 4,
-    title: "The Martian",
-    author: "Andy Weir",
-    category: "Science Fiction",
-    date: "May 2, 2025",
-    cover: "bg-orange-500 text-white",
-  },
-  {
-    id: 5,
-    title: "Harry Potter",
-    author: "J.K. Rowling",
-    category: "Fantasy",
-    date: "Apr 30, 2025",
-    cover: "bg-stone-800 text-yellow-300",
-  },
-];
-
+import { Book } from "@/data/books";
+import { authClient } from "@/lib/auth-client";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 export default function MyBooksPage() {
-  const [books, setBooks] = useState(initialBooks);
+  const [books, setBooks] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [booksData, setBooksData] = useState<Book[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const perPage = 5;
 
-  const filteredBooks = useMemo(() => {
-    return books.filter((book) =>
-      `${book.title} ${book.author} ${book.category}`
-        .toLowerCase()
-        .includes(search.toLowerCase())
-    );
-  }, [books, search]);
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+  useEffect(() => {
+    const getBooksData = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books`);
+        const data = await res.json();
+        setBooksData(data);
+      } catch (error) {
+        setError("");
+      } finally {
+        setLoading(false);
+      }
+    };
+    getBooksData();
+  }, []);
+  const myBooks = booksData.filter((book) => book.email === user?.email);
 
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredBooks.length / perPage)
-  );
+  const filteredBooks = myBooks.filter((book) => {
+    if (!search.trim()) return myBooks;
+    const filterBooks = book.title.toLowerCase().includes(search.toLowerCase());
+    console.log(filterBooks);
+    return filterBooks;
+  });
+  const totalPages = Math.max(1, Math.ceil(filteredBooks.length / perPage));
 
   const currentBooks = filteredBooks.slice(
     (page - 1) * perPage,
-    page * perPage
+    page * perPage,
   );
 
   const deleteBook = (id: number) => {
-    setBooks((prev) => prev.filter((book) => book.id !== id));
-  };
-
-  const addBook = () => {
-    const title = prompt("Enter book title:");
-    if (!title?.trim()) return;
-
-    const author = prompt("Enter author name:") || "Unknown Author";
-    const category = prompt("Enter category:") || "General";
-
-    setBooks((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        title,
-        author,
-        category,
-        date: new Date().toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        }),
-        cover: "bg-emerald-700 text-white",
-      },
-    ]);
-    setPage(Math.ceil((books.length + 1) / perPage));
   };
 
   const editBook = (book: Book) => {
-    const title = prompt("Edit book title:", book.title);
-    if (!title?.trim()) return;
-
-    setBooks((prev) =>
-      prev.map((item) =>
-        item.id === book.id ? { ...item, title } : item
-      )
-    );
   };
-
   return (
-    <main className="min-h-screen bg-[#fafaf7] px-4 py-8 sm:px-6 lg:px-10">
-      <div className="mx-auto max-w-6xl">
-
+    <main className="min-h-screen px-4 py-8 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold tracking-tight text-[#174c43]">
+          <h1 className="font-display text-3xl font-bold tracking-tight text-[#174c43]">
             My Books
           </h1>
           <p className="mt-2 text-sm text-gray-500">
@@ -160,9 +90,9 @@ export default function MyBooksPage() {
             />
           </div>
 
-          <button
-            onClick={addBook}
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-emerald-100 bg-white text-emerald-700 shadow-sm transition hover:bg-emerald-50"
+          <Link
+            href="/add-book"
+            className="flex h-12 px-5 shrink-0 items-center justify-center rounded-xl border border-emerald-100 bg-white text-emerald-700 shadow-sm transition hover:bg-emerald-50"
             title="Add Book"
           >
             <svg
@@ -174,12 +104,12 @@ export default function MyBooksPage() {
             >
               <path d="M12 5v14M5 12h14" />
             </svg>
-          </button>
+            Add Book
+          </Link>
         </div>
 
         {/* Books Table */}
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-
           {/* Desktop Header */}
           <div className="hidden grid-cols-[2fr_1.1fr_1fr_1.2fr] gap-4 border-b border-gray-100 bg-[#fcfcfa] px-6 py-4 text-sm font-semibold text-[#286c5e] md:grid">
             <span>Books</span>
@@ -189,10 +119,10 @@ export default function MyBooksPage() {
           </div>
 
           {/* Book Rows */}
-          {currentBooks.length > 0 ? (
-            currentBooks.map((book) => (
+          {booksData.length > 0 ? (
+            filteredBooks.map((book) => (
               <div
-                key={book.id}
+                key={book._id}
                 className="grid grid-cols-1 gap-4 border-b border-gray-100 px-4 py-4 transition hover:bg-[#fafcf9] last:border-0 sm:px-6 md:grid-cols-[2fr_1.1fr_1fr_1.2fr] md:items-center"
               >
                 {/* Book Information */}
@@ -200,21 +130,19 @@ export default function MyBooksPage() {
                   <div
                     className={`flex h-[65px] w-[48px] shrink-0 flex-col items-center justify-center rounded-md border border-black/10 p-1 text-center shadow-sm ${book.cover}`}
                   >
-                    <span className="text-[8px] font-bold leading-tight">
-                      {book.title}
-                    </span>
-                    <span className="mt-1 text-[6px] opacity-70">
-                      BOOK
-                    </span>
+                    <Image
+                      src={book?.image}
+                      alt={book?.title}
+                      width={50}
+                      height={50}
+                    />
                   </div>
 
                   <div className="min-w-0">
                     <h3 className="truncate text-sm font-bold text-[#214d46]">
                       {book.title}
                     </h3>
-                    <p className="mt-1 text-xs text-gray-500">
-                      {book.author}
-                    </p>
+                    <p className="mt-1 text-xs text-gray-500">{book.author}</p>
                   </div>
                 </div>
 
@@ -223,9 +151,7 @@ export default function MyBooksPage() {
                   <span className="text-xs text-gray-600 md:hidden">
                     Category:{" "}
                   </span>
-                  <span className="text-sm text-gray-500">
-                    {book.category}
-                  </span>
+                  <span className="text-sm text-gray-500">{book.category}</span>
                 </div>
 
                 {/* Date */}
@@ -234,7 +160,7 @@ export default function MyBooksPage() {
                     Added:{" "}
                   </span>
                   <span className="text-sm text-gray-500">
-                    {book.date}
+                    {book.creatDate}
                   </span>
                 </div>
 
@@ -267,9 +193,7 @@ export default function MyBooksPage() {
             ))
           ) : (
             <div className="px-4 py-16 text-center">
-              <p className="font-semibold text-gray-600">
-                No books found!
-              </p>
+              <p className="font-semibold text-gray-600">No books found!</p>
               <p className="mt-1 text-sm text-gray-400">
                 Try searching with another keyword.
               </p>
@@ -287,21 +211,19 @@ export default function MyBooksPage() {
             ‹
           </button>
 
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-            (number) => (
-              <button
-                key={number}
-                onClick={() => setPage(number)}
-                className={`h-10 min-w-10 rounded-lg px-3 text-sm font-semibold transition ${
-                  page === number
-                    ? "bg-[#08785e] text-white shadow-sm"
-                    : "border border-gray-200 bg-white text-gray-600 hover:bg-emerald-50"
-                }`}
-              >
-                {number}
-              </button>
-            )
-          )}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
+            <button
+              key={number}
+              onClick={() => setPage(number)}
+              className={`h-10 min-w-10 rounded-lg px-3 text-sm font-semibold transition ${
+                page === number
+                  ? "bg-[#08785e] text-white shadow-sm"
+                  : "border border-gray-200 bg-white text-gray-600 hover:bg-emerald-50"
+              }`}
+            >
+              {number}
+            </button>
+          ))}
 
           <button
             disabled={page === totalPages}
@@ -311,7 +233,6 @@ export default function MyBooksPage() {
             ›
           </button>
         </div>
-
       </div>
     </main>
   );

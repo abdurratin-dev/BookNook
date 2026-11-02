@@ -15,7 +15,7 @@ export default function AllBooksPage() {
       <p className="mt-2 text-sm text-slate-500">
         Browse our complete collection of books.
       </p>
-
+      
       <BookCatalog />
     </div>
   );

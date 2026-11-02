@@ -1,18 +1,26 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { BookOpen, ChevronDown, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  BookOpen,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+} from "lucide-react";
 import BookCard from "@/components/cards/BookCard";
+import { Book } from "@/data/books";
 
 const PER_PAGE = 9;
 
 type Filters = { query: string; category: string };
 
-function matches(book , { query, category }: Filters) {
+function matches(book: Book, { query, category }: Filters) {
   if (category !== "" && book.category !== category) return false;
   if (query === "") return true;
-  
-  const haystack = `${book.title} ${book.author} ${book.category}`.toLowerCase();
+
+  const haystack =
+    `${book.title} ${book.author} ${book.category}`.toLowerCase();
   return haystack.includes(query);
 }
 
@@ -20,44 +28,59 @@ export default function BookCatalog() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
   const [page, setPage] = useState(1);
+  const [booksData, setBooksData] = useState<Book[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const normalizedQuery = query.trim().toLowerCase();
-  const allBooks = [];
-  const bookCategories = [];
-  const filtered = useMemo(
-    () =>
-      allBooks.filter((book) =>
-        matches(book, { query: normalizedQuery, category }),
-      ),
-    [normalizedQuery, category],
-  );
+  useEffect(() => {
+    const getBooksData = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books`);
+        const data = await res.json();
+        setBooksData(data);
+      } catch (error) {
+        setError("");
+      } finally {
+        setLoading(false);
+      }
+    };
+    getBooksData();
+  }, []);
+  console.log(booksData);
+  const bookCategories = [
+    "Fiction",
+    "Science Fiction",
+    "History",
+    "Kids",
+    "Other / Unknown",
+  ];
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
-  const currentPage = Math.min(page, totalPages);
-  const start = (currentPage - 1) * PER_PAGE;
-  const visible = filtered.slice(start, start + PER_PAGE);
+  const books = booksData.filter((books) => books.category === category);
+  const allBooks = books.length === 0 ? booksData : books;
 
-  const goTo = (next: number) => setPage(Math.min(Math.max(next, 1), totalPages));
+  // মোট কতটি পেজ হবে
+  const totalPages = Math.ceil(allBooks.length / PER_PAGE);
 
+  // কোন পেজের ডাটা দেখাবে
+  const startIndex = (currentPage - 1) * PER_PAGE;
+  const currentData = allBooks.slice(startIndex, startIndex + PER_PAGE);
+
+  // Page change function
+  const goTo = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
+  
   return (
     <div>
       {/* Search + category filters */}
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input
-            type="search"
-            value={query}
-            onChange={(event) => {
-              setQuery(event.target.value);
-              setPage(1);
-            }}
-            placeholder="Search books by title, author, or category..."
-            aria-label="Search books"
-            className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 text-sm text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-[#0d4d33] focus:ring-2 focus:ring-[#0d4d33]/15"
-          />
-        </div>
-
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center justify-between">
+        {/* Result count */}
+        <p className=" text-xs font-medium text-slate-500 sm:text-sm">
+          Total Books:{" "}
+          <span className="font-bold text-slate-800">{booksData.length}</span>
+        </p>
         <div className="relative sm:w-52">
           <select
             value={category}
@@ -79,17 +102,11 @@ export default function BookCatalog() {
         </div>
       </div>
 
-      {/* Result count */}
-      <p className="mt-5 text-xs font-medium text-slate-500 sm:text-sm">
-        Total Books:{" "}
-        <span className="font-bold text-slate-800">{filtered.length}</span>
-      </p>
-
       {/* Book grid */}
-      {visible.length > 0 ? (
+      {allBooks.length > 0 ? (
         <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5">
-          {visible.map((book) => (
-            <BookCard key={book.id} book={book} />
+          {allBooks.map((book) => (
+            <BookCard key={book._id} book={book} />
           ))}
         </div>
       ) : (
@@ -97,7 +114,9 @@ export default function BookCatalog() {
           <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#0d4d33]/10">
             <BookOpen className="h-6 w-6 text-[#0d4d33]" />
           </span>
-          <p className="mt-4 text-sm font-bold text-slate-800">No books found</p>
+          <p className="mt-4 text-sm font-bold text-slate-800">
+            No books found
+          </p>
           <p className="mt-1 text-xs text-slate-500">
             Try a different search term or pick another category.
           </p>
@@ -105,7 +124,7 @@ export default function BookCatalog() {
       )}
 
       {/* Pagination */}
-      {filtered.length > PER_PAGE && (
+      {allBooks.length > PER_PAGE && (
         <nav
           aria-label="Pagination"
           className="mt-10 flex items-center justify-center gap-2"
@@ -120,21 +139,23 @@ export default function BookCatalog() {
             <ChevronLeft className="h-4 w-4" />
           </button>
 
-          {Array.from({ length: totalPages }, (_, index) => index + 1).map((number) => (
-            <button
-              key={number}
-              type="button"
-              onClick={() => goTo(number)}
-              aria-current={number === currentPage ? "page" : undefined}
-              className={`h-9 min-w-9 rounded-lg px-2 text-sm font-bold transition-colors ${
-                number === currentPage
-                  ? "bg-[#0d4d33] text-white shadow-sm"
-                  : "border border-slate-200 bg-white text-slate-600 hover:border-[#0d4d33] hover:text-[#0d4d33]"
-              }`}
-            >
-              {number}
-            </button>
-          ))}
+          {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+            (number) => (
+              <button
+                key={number}
+                type="button"
+                onClick={() => goTo(number)}
+                aria-current={number === currentPage ? "page" : undefined}
+                className={`h-9 min-w-9 rounded-lg px-2 text-sm font-bold transition-colors ${
+                  number === currentPage
+                    ? "bg-[#0d4d33] text-white shadow-sm"
+                    : "border border-slate-200 bg-white text-slate-600 hover:border-[#0d4d33] hover:text-[#0d4d33]"
+                }`}
+              >
+                {number}
+              </button>
+            ),
+          )}
 
           <button
             type="button"
