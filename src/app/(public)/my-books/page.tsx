@@ -1,10 +1,12 @@
 "use client";
 
+import { EditBook } from "@/components/books/editBooks";
 import { Book } from "@/data/books";
 import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 export default function MyBooksPage() {
   const [books, setBooks] = useState([]);
   const [search, setSearch] = useState("");
@@ -46,11 +48,20 @@ export default function MyBooksPage() {
     page * perPage,
   );
 
-  const deleteBook = (id: number) => {
+  const hendleDeleteBook = async(_id: string,title:string) => {
+    try{
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books/${_id}`,{
+        method: "DELETE",
+      });
+      const result = await res.json();
+      console.log(result);
+    }catch(error){
+      toast.error("Delete faild")
+    }
+    toast.success(`${title} is deleted`);
+    window.location.reload()
   };
 
-  const editBook = (book: Book) => {
-  };
   return (
     <main className="min-h-screen px-4 py-8 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-7xl">
@@ -166,24 +177,10 @@ export default function MyBooksPage() {
 
                 {/* Actions */}
                 <div className="flex items-center gap-2 md:justify-center">
-                  <button
-                    onClick={() => editBook(book)}
-                    className="flex items-center gap-1.5 rounded-lg border border-emerald-200 px-3 py-2 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50"
-                  >
-                    <svg
-                      className="h-3.5 w-3.5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="m15 5 4 4M4 20l4-.8L19 8a2.1 2.1 0 0 0-3-3L5 16l-1 4Z" />
-                    </svg>
-                    Edit
-                  </button>
+                  <EditBook book={book}/>
 
                   <button
-                    onClick={() => deleteBook(book.id)}
+                    onClick={() => hendleDeleteBook(book?._id,book.title)}
                     className="rounded-lg border border-red-200 px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-50"
                   >
                     Delete
