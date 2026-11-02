@@ -3,26 +3,33 @@
 import { authClient } from "@/lib/auth-client";
 import { BorrowsListType } from "@/types/borrowListType";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
-const STATUS_STYLES: Record<string> = {
+const STATUS_STYLES = {
   Active: "bg-[#d3f4e0] text-[#0f7b4f]",
   Returned: "bg-[#e6efe9] text-[#41604f]",
 };
 
-function StatusBadge({ status }: { status }) {
+function StatusBadge({ status }: { status: string }) {
   return (
     <span
-      className={`inline-flex items-center rounded-md px-3 py-1.5 text-[11px] font-bold ${STATUS_STYLES[status]}`}
+      className={`inline-flex items-center rounded-md px-3 py-1.5 text-[11px] font-bold ${STATUS_STYLES[status] as string}`}
     >
       {status}
     </span>
   );
 }
 
-function ReturnButton({ status, onClick }: { status; onClick: () => void }) {
+function ReturnButton({
+  status,
+  onClick,
+}: {
+  status: string;
+  onClick: () => void;
+}) {
   const disabled = status === "Returned";
-
   return (
     <button
       type="button"
@@ -41,7 +48,6 @@ function ReturnButton({ status, onClick }: { status; onClick: () => void }) {
 
 function Cover({ borrowing }: { borrowing: BorrowsListType }) {
   const [failed, setFailed] = useState(false);
-
   return (
     <div className="relative h-14 w-10 shrink-0 overflow-hidden rounded-md bg-slate-100">
       {failed ? (
@@ -52,7 +58,10 @@ function Cover({ borrowing }: { borrowing: BorrowsListType }) {
         </div>
       ) : (
         <Image
-          src={borrowing.image}
+          src={
+            borrowing?.image ||
+            "https://cdn.pixabay.com/photo/2020/03/18/15/40/book-4944519_960_720.jpg"
+          }
           alt={`${borrowing.title} cover`}
           fill
           unoptimized
@@ -78,6 +87,7 @@ export default function BorrowList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [items, setItems] = useState<BorrowsListType[]>([]);
+  const router = useRouter()
   const { data: session } = authClient.useSession();
   const user = session?.user;
   useEffect(() => {
@@ -99,6 +109,28 @@ export default function BorrowList() {
     };
     getBorrowsData();
   }, [user]);
+
+  const hendlereturnBook = async (id: string,name:string) => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/borrows/${id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({status:"Returned"}),
+        },
+      );
+      const result = await res.json();
+      console.log(result);
+    } catch (error) {
+      toast.error("This book not returned");
+    }finally{
+      toast.success(`${name} are successfully returned`)
+      router.refresh();
+    }
+  };
 
   const returnBook = (id: string) =>
     setItems((current) =>
@@ -146,7 +178,7 @@ export default function BorrowList() {
               <td className="px-6 py-4 text-right">
                 <ReturnButton
                   status={borrowing.status}
-                  onClick={() => returnBook(borrowing._id)}
+                  onClick={() => hendlereturnBook(borrowing._id,borrowing.title)}
                 />
               </td>
             </tr>
