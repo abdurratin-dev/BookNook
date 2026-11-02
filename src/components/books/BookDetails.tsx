@@ -5,18 +5,17 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import {
-  CalendarDays,
   ChevronRight,
   Hash,
   Languages,
   Layers,
-  Plus,
   Quote,
   Star,
   UserRound,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import type { Book, BookReview } from "@/data/books";
+import BorrowCard from "../borrows/BorrowCard";
 
 type Tab = "description" | "reviews";
 
@@ -85,7 +84,9 @@ function Rating({ book }: { book: Book }) {
           </span>
         </span>
       ) : (
-        <span className="text-sm font-medium text-slate-400">No reviews yet</span>
+        <span className="text-sm font-medium text-slate-400">
+          No reviews yet
+        </span>
       )}
     </div>
   );
@@ -97,7 +98,11 @@ function InfoCard({ book }: { book: Book }) {
     { icon: UserRound, label: "Author", value: book.author },
     { icon: Layers, label: "Category", value: book.category },
     { icon: Languages, label: "Language", value: book.language ?? "English" },
-    { icon: Hash, label: "Pages", value: book.pages ? String(book.pages) : "—" },
+    {
+      icon: Hash,
+      label: "Pages",
+      value: book.pages ? String(book.pages) : "—",
+    },
   ];
 
   return (
@@ -142,8 +147,13 @@ function ReviewList({ reviews }: { reviews: BookReview[] }) {
           className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm"
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-sm font-bold text-slate-800">{review.userName}</p>
-            <span className="flex items-center gap-0.5" aria-label={`${review.rating} out of 5 stars`}>
+            <p className="text-sm font-bold text-slate-800">
+              {review.userName}
+            </p>
+            <span
+              className="flex items-center gap-0.5"
+              aria-label={`${review.rating} out of 5 stars`}
+            >
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
                   key={star}
@@ -176,7 +186,6 @@ export default function BookDetails({ bookId }: { bookId: string }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [tab, setTab] = useState<Tab>("description");
-  const [borrowing, setBorrowing] = useState(false);
   const [saved, setSaved] = useState(false);
 
   const { data: session } = authClient.useSession();
@@ -218,37 +227,6 @@ export default function BookDetails({ bookId }: { bookId: string }) {
     getReviews();
   }, [bookId]);
 
-  const handleBorrow = async () => {
-    if (!user) {
-      toast.error("Please sign in to borrow this book.");
-      return;
-    }
-    setBorrowing(true);
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/borrows`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookId: book?._id, email: user.email }),
-      });
-      if (!res.ok) throw new Error("Borrow failed");
-      toast.success(`${book?.title} borrowed successfully.`);
-    } catch {
-      toast.error("Could not borrow this book right now.");
-    } finally {
-      setBorrowing(false);
-    }
-  };
-
-  const handleAddToMyBooks = () => {
-    setSaved((prev) => {
-      const next = !prev;
-      toast.success(
-        next ? "Added to My Books." : "Removed from My Books.",
-      );
-      return next;
-    });
-  };
-
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-32 text-slate-400">
@@ -261,9 +239,7 @@ export default function BookDetails({ bookId }: { bookId: string }) {
   if (error || !book) {
     return (
       <div className="flex flex-col items-center justify-center gap-2 py-32 text-center">
-        <p className="text-sm font-bold text-slate-800">
-          Book not found
-        </p>
+        <p className="text-sm font-bold text-slate-800">Book not found</p>
         <p className="text-sm text-slate-500">
           {error || "This book may have been removed from the library."}
         </p>
@@ -279,12 +255,18 @@ export default function BookDetails({ bookId }: { bookId: string }) {
 
   return (
     <div>
-      <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5 text-xs font-medium text-slate-400">
+      <nav
+        aria-label="Breadcrumb"
+        className="flex flex-wrap items-center gap-1.5 text-xs font-medium text-slate-400"
+      >
         <Link href="/" className="transition-colors hover:text-[#0d4d33]">
           Home
         </Link>
         <ChevronRight className="h-3.5 w-3.5" />
-        <Link href="/all-books" className="transition-colors hover:text-[#0d4d33]">
+        <Link
+          href="/all-books"
+          className="transition-colors hover:text-[#0d4d33]"
+        >
           All Books
         </Link>
         <ChevronRight className="h-3.5 w-3.5" />
@@ -338,38 +320,22 @@ export default function BookDetails({ bookId }: { bookId: string }) {
               </span>
             </div>
 
-            <p className="mt-3 flex items-center gap-2 text-sm text-slate-600">
-              <CalendarDays className="h-4 w-4 text-[#16845a]" />
+            <p className="mt-3 flex items-center gap-5 text-sm text-slate-600">
               <span>
                 <span className="font-semibold text-slate-800">Added on:</span>{" "}
-                {formatDate(book.createdAt ?? book.creatDate)}
+                {book.name}
+              </span>
+              <span>
+                <span className="font-semibold text-slate-800">
+                  Added date:
+                </span>{" "}
+                {formatDate(book.createdAt)}
               </span>
             </p>
 
             {/* Actions */}
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <button
-                type="button"
-                onClick={handleBorrow}
-                disabled={borrowing}
-                className="rounded-xl bg-[#0d4d33] px-8 py-3.5 text-sm font-bold text-white shadow-md shadow-[#0d4d33]/25 transition-all duration-300 hover:bg-[#126344] active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60"
-              >
-                {borrowing ? "Borrowing…" : "Borrow Book"}
-              </button>
-
-              <button
-                type="button"
-                onClick={handleAddToMyBooks}
-                aria-pressed={saved}
-                className={`flex items-center justify-center gap-2 rounded-xl border px-8 py-3.5 text-sm font-bold transition-all duration-300 active:scale-[0.98] ${
-                  saved
-                    ? "border-[#0d4d33] bg-[#0d4d33] text-white"
-                    : "border-[#0d4d33]/40 bg-white text-[#0d4d33] hover:border-[#0d4d33] hover:bg-[#f0f7f3]"
-                }`}
-              >
-                <Plus className="h-4 w-4" />
-                {saved ? "Added to My Books" : "Add to My Books"}
-              </button>
+              <BorrowCard book={book}/>
             </div>
           </div>
         </div>

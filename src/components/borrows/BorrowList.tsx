@@ -1,21 +1,16 @@
 "use client";
 
+import { authClient } from "@/lib/auth-client";
+import { BorrowsListType } from "@/types/borrowListType";
 import Image from "next/image";
-import { useState } from "react";
-import {
-  borrowings,
-  borrowingBook,
-  formatBorrowDate,
-  type Borrowing,
-  type BorrowingStatus,
-} from "@/data/borrowings";
+import { useEffect, useState } from "react";
 
-const STATUS_STYLES: Record<BorrowingStatus, string> = {
+const STATUS_STYLES: Record<string> = {
   Active: "bg-[#d3f4e0] text-[#0f7b4f]",
   Returned: "bg-[#e6efe9] text-[#41604f]",
 };
 
-function StatusBadge({ status }: { status: BorrowingStatus }) {
+function StatusBadge({ status }: { status }) {
   return (
     <span
       className={`inline-flex items-center rounded-md px-3 py-1.5 text-[11px] font-bold ${STATUS_STYLES[status]}`}
@@ -25,13 +20,7 @@ function StatusBadge({ status }: { status: BorrowingStatus }) {
   );
 }
 
-function ReturnButton({
-  status,
-  onClick,
-}: {
-  status: BorrowingStatus;
-  onClick: () => void;
-}) {
+function ReturnButton({ status, onClick }: { status; onClick: () => void }) {
   const disabled = status === "Returned";
 
   return (
@@ -50,22 +39,21 @@ function ReturnButton({
   );
 }
 
-function Cover({ borrowing }: { borrowing: Borrowing }) {
+function Cover({ borrowing }: { borrowing: BorrowsListType }) {
   const [failed, setFailed] = useState(false);
-  const book = borrowingBook(borrowing);
 
   return (
     <div className="relative h-14 w-10 shrink-0 overflow-hidden rounded-md bg-slate-100">
       {failed ? (
         <div className="flex h-full w-full items-end bg-gradient-to-br from-[#0d4d33] to-[#16845a] p-1">
           <span className="line-clamp-2 text-[8px] font-bold leading-tight text-white">
-            {book.title}
+            {borrowing.title}
           </span>
         </div>
       ) : (
         <Image
-          src={book.cover}
-          alt={`${book.title} cover`}
+          src={borrowing.image}
+          alt={`${borrowing.title} cover`}
           fill
           unoptimized
           sizes="40px"
@@ -77,9 +65,7 @@ function Cover({ borrowing }: { borrowing: Borrowing }) {
   );
 }
 
-function BookIdentity({ borrowing }: { borrowing: Borrowing }) {
-  const book = borrowingBook(borrowing);
-
+function BookIdentity({ book }: { book: BorrowsListType }) {
   return (
     <div className="min-w-0">
       <p className="truncate text-sm font-bold text-slate-800">{book.title}</p>
@@ -89,12 +75,35 @@ function BookIdentity({ borrowing }: { borrowing: Borrowing }) {
 }
 
 export default function BorrowList() {
-  const [items, setItems] = useState<Borrowing[]>(borrowings);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [items, setItems] = useState<BorrowsListType[]>([]);
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+  useEffect(() => {
+    const getBorrowsData = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/borrows`,
+        );
+        const data: BorrowsListType[] = await res.json();
+        const borrows = data.filter(
+          (borrows) => borrows.receiveremail === user?.email,
+        );
+        setItems(borrows);
+      } catch (error) {
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getBorrowsData();
+  }, [user]);
 
   const returnBook = (id: string) =>
     setItems((current) =>
       current.map((item) =>
-        item.id === id && item.status === "Active"
+        item._id === id && item.status === "Active"
           ? { ...item, status: "Returned" as const }
           : item,
       ),
@@ -116,20 +125,20 @@ export default function BorrowList() {
         <tbody>
           {items.map((borrowing) => (
             <tr
-              key={borrowing.id}
+              key={borrowing._id}
               className="border-b border-slate-50 transition-colors last:border-0 hover:bg-slate-50/70"
             >
               <td className="px-6 py-4">
                 <div className="flex items-center gap-3">
                   <Cover borrowing={borrowing} />
-                  <BookIdentity borrowing={borrowing} />
+                  <BookIdentity book={borrowing} />
                 </div>
               </td>
               <td className="px-6 py-4 text-sm text-slate-500">
-                {formatBorrowDate(borrowing.borrowedOn)}
+                {borrowing.receiveremail}
               </td>
               <td className="px-6 py-4 text-sm text-slate-500">
-                {formatBorrowDate(borrowing.returnDate)}
+                {borrowing.returnDate}
               </td>
               <td className="px-6 py-4">
                 <StatusBadge status={borrowing.status} />
@@ -137,7 +146,7 @@ export default function BorrowList() {
               <td className="px-6 py-4 text-right">
                 <ReturnButton
                   status={borrowing.status}
-                  onClick={() => returnBook(borrowing.id)}
+                  onClick={() => returnBook(borrowing._id)}
                 />
               </td>
             </tr>
@@ -148,20 +157,20 @@ export default function BorrowList() {
       {/* Mobile cards */}
       <ul className="divide-y divide-slate-100 md:hidden">
         {items.map((borrowing) => (
-          <li key={borrowing.id} className="p-4">
+          <li key={borrowing._id} className="p-4">
             <div className="flex items-start gap-3">
               <Cover borrowing={borrowing} />
               <div className="min-w-0 flex-1">
-                <BookIdentity borrowing={borrowing} />
+                <BookIdentity book={borrowing} />
 
                 <dl className="mt-3 grid grid-cols-2 gap-y-2 text-xs">
                   <dt className="font-semibold text-slate-400">Borrowed On</dt>
                   <dd className="text-right text-slate-500">
-                    {formatBorrowDate(borrowing.borrowedOn)}
+                    {borrowing.receiveremail}
                   </dd>
                   <dt className="font-semibold text-slate-400">Return Date</dt>
                   <dd className="text-right text-slate-500">
-                    {formatBorrowDate(borrowing.returnDate)}
+                    {borrowing.returnDate}
                   </dd>
                 </dl>
 
@@ -169,7 +178,7 @@ export default function BorrowList() {
                   <StatusBadge status={borrowing.status} />
                   <ReturnButton
                     status={borrowing.status}
-                    onClick={() => returnBook(borrowing.id)}
+                    onClick={() => returnBook(borrowing._id)}
                   />
                 </div>
               </div>
