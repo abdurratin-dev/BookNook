@@ -1,4 +1,5 @@
 "use client";
+import ProfileSkeleton from "@/components/skeleton/profileSkeleton";
 import { Book } from "@/data/books";
 import { authClient } from "@/lib/auth-client";
 import { BorrowsListType } from "@/types/borrowListType";
@@ -53,6 +54,10 @@ export default function ProfilePage() {
     };
     getBorrowsData();
   }, [user]);
+
+  if(loading){
+    return <ProfileSkeleton />
+  }
   return (
     <div className="mx-auto max-w-7xl min-h-screen bg-[#fcfcfa] px-4 py-8 sm:px-6 lg:px-8">
       <div>
@@ -88,7 +93,7 @@ export default function ProfilePage() {
                   </h2>
                   <p className="mt-1 text-sm text-gray-500">{user?.email}</p>
                   <span className="mt-2 inline-flex rounded-full bg-[#e8f3ed] px-3 py-1 text-xs font-semibold text-[#286c5e]">
-                    {user?.role}
+                    {/* {user?.role} */}
                   </span>
                 </div>
               </div>
@@ -168,9 +173,6 @@ export default function ProfilePage() {
             {[
               { label: "Full Name", value: user?.name },
               { label: "Email Address", value: user?.email },
-              { label: "Phone Number", value: user?.phone },
-              { label: "Location", value: user?.address },
-              { label: "Member Since", value: user?.joined },
               { label: "Account Type", value: "Reader Account" },
             ].map((item) => (
               <div key={item.label}>

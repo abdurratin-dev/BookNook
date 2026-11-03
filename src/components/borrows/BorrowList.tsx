@@ -8,15 +8,16 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import BorrowListSkeleton from "../skeleton/myBorrowsSkeleton";
 
-const STATUS_STYLES = {
+const STATUS_STYLES : {Active : string ,Returned : string}= {
   Active: "bg-[#d3f4e0] text-[#0f7b4f]",
   Returned: "bg-[#e6efe9] text-[#41604f]",
 };
 
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status }: { status: any}) {
+
   return (
     <span
-      className={`inline-flex items-center rounded-md px-3 py-1.5 text-[11px] font-bold ${STATUS_STYLES[status] as string}`}
+      className={`inline-flex items-center rounded-md px-3 py-1.5 text-[11px] font-bold ${STATUS_STYLES[status]}`}
     >
       {status}
     </span>

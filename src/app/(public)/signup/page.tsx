@@ -35,9 +35,9 @@ function Requirement({
 }
 
 export default function SignupPage() {
-  const [name,setName] = useState('');
-  const [email,setEmail] = useState('');
-  const [image,setImage] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [image, setImage] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -46,31 +46,36 @@ export default function SignupPage() {
   const hasUppercase = /[A-Z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
 
-  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = {
       name,
       email,
       password,
       image,
-    }
-    const {data,error} = await authClient.signUp.email({
-      name : formData.name,
-      email : formData.email,
-      password : formData.password,
-      image : formData.image
-    })
-    if(error){
+    };
+    const { data, error } = await authClient.signUp.email({
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      image: formData.image,
+    });
+    if (error) {
       toast.error(error?.message as string);
       return;
     }
     toast.success(`${data?.user.email} You are Successfully Sign Up`);
   };
+
+  const hendleGoogleSignup = async() => {
+    const data = await authClient.signIn.social({
+      provider: "google",
+    });
+    console.log(data);
+  };
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#f3f5ef] p-4 sm:p-6">
-
       <div className="grid w-full max-w-6xl overflow-hidden rounded-2xl border border-emerald-900/10 bg-white shadow-xl md:min-h-[650px] md:grid-cols-[0.9fr_1.1fr]">
-
         {/* Left Side */}
         <section
           className="relative flex min-h-[250px] flex-col justify-center overflow-hidden bg-cover bg-center p-8 sm:p-12 md:min-h-full"
@@ -82,7 +87,6 @@ export default function SignupPage() {
           <div className="absolute inset-0 bg-emerald-950/25" />
 
           <div className="relative z-10 mx-auto mt-auto max-w-sm text-center text-white md:mt-0">
-
             <h1 className="font-serif text-3xl font-bold leading-tight sm:text-4xl">
               Join
               <br />
@@ -94,18 +98,14 @@ export default function SignupPage() {
               <br className="hidden sm:block" />
               your reading journey.
             </p>
-
           </div>
         </section>
 
         {/* Right Side */}
         <section className="flex items-center justify-center px-6 py-10 sm:px-12 md:px-14 lg:px-16">
-
           <div className="w-full max-w-md">
-
             {/* Logo */}
             <div className="mb-7 text-center">
-
               <div className="mb-2 flex items-center justify-center gap-2">
                 <BookOpen
                   size={27}
@@ -125,7 +125,6 @@ export default function SignupPage() {
               <p className="mt-2 text-sm text-slate-400">
                 Create your account to get started.
               </p>
-
             </div>
 
             {/* Sign Up Form */}
@@ -149,7 +148,7 @@ export default function SignupPage() {
                     id="name"
                     type="text"
                     value={name}
-                    onChange={(e)=>setName(e.target.value)}
+                    onChange={(e) => setName(e.target.value)}
                     placeholder="Enter your name"
                     required
                     className="h-11 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-4 text-sm text-slate-700 outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/10"
@@ -177,7 +176,7 @@ export default function SignupPage() {
                     type="email"
                     placeholder="Enter your email"
                     value={email}
-                    onChange={(e)=>setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                     className="h-11 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-4 text-sm text-slate-700 outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/10"
                   />
@@ -212,14 +211,12 @@ export default function SignupPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-800"
                   >
-                    {showPassword ? (
-                      <EyeOff size={17} />
-                    ) : (
-                      <Eye size={17} />
-                    )}
+                    {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                   </button>
                 </div>
 
@@ -247,7 +244,6 @@ export default function SignupPage() {
               >
                 Sign Up
               </button>
-
             </Form>
 
             {/* Divider */}
@@ -264,6 +260,7 @@ export default function SignupPage() {
             {/* Google Button */}
             <button
               type="button"
+              onClick={hendleGoogleSignup}
               className="flex h-11 w-full items-center justify-center gap-3 rounded-lg border border-slate-200 bg-white text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
             >
               <svg
@@ -289,7 +286,6 @@ export default function SignupPage() {
                   d="M24 12.1c3 0 5.7 1 7.8 3.1l5.8-5.8C34.1 6 29.5 4 24 4 16.2 4 9.4 8.5 6 15.2l6.6 5.1c1.6-4.8 6.1-8.2 11.4-8.2Z"
                 />
               </svg>
-
               Continue with Google
             </button>
 
@@ -303,7 +299,6 @@ export default function SignupPage() {
                 Login
               </Link>
             </p>
-
           </div>
         </section>
       </div>
