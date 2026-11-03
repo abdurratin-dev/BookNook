@@ -15,7 +15,7 @@ const CATEGORIES = [
 
 /** Demo values — replace with the authenticated session later if you want. */
 
-type Field = "title" | "author" | "category" | "image" | "description";
+type Field = "title" | "author" | "category" | "image" | "description" | "page";
 type Errors = Partial<Record<Field, string>>;
 
 const LABEL = "block text-sm font-medium text-slate-700";
@@ -32,6 +32,7 @@ export default function AddBookForm() {
   const [category, setCategory] = useState("");
   const [image, setImage] = useState("");
   const [description, setDescription] = useState("");
+  const [page, setPage] = useState("");
   const [errors, setErrors] = useState<Errors>({});
   const [success, setSuccess] = useState(false);
 
@@ -47,7 +48,7 @@ export default function AddBookForm() {
     setErrors((prev) => ({ ...prev, [field]: message }));
   const { data: session } = authClient.useSession();
   const user = session?.user;
-  const handleSubmit = async(e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const next: Errors = {};
@@ -57,11 +58,19 @@ export default function AddBookForm() {
     if (!image.trim()) next.image = "Image url is required.";
     if (!description.trim()) next.description = "Description is required.";
     setErrors(next);
-    if(!title.trim() ||  !author.trim() || !image.trim() || !category || !description.trim()){
+    if (
+      !title.trim() ||
+      !author.trim() ||
+      !image.trim() ||
+      !category ||
+      !description.trim()
+    ) {
       console.log(description);
       return;
     }
 
+    const date = new Date().toDateString();
+    console.log(date);
     const formData = {
       title,
       author,
@@ -69,13 +78,15 @@ export default function AddBookForm() {
       image,
       description,
       name: user?.name,
-      email : user?.email,
+      email: user?.email,
+      createdDate: date,
+      page,
     };
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books`,{
-      method: 'POST',
-      headers:{
-         "Content-Type": "application/json",
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(formData),
     });
@@ -86,6 +97,7 @@ export default function AddBookForm() {
     setCategory("");
     setImage("");
     setDescription("");
+    setPage("");
     setSuccess(true);
   };
   return (
@@ -184,6 +196,23 @@ export default function AddBookForm() {
           {errors.image && <p className={ERROR_TEXT}>{errors.image}</p>}
         </div>
 
+        <div>
+          <label htmlFor="book-title" className={LABEL}>
+            Pages {REQUIRED}
+          </label>
+          <input
+            id="book-page"
+            value={page}
+            onChange={(e) => {
+              setPage(e.target.value);
+              if (errors.page) setError("page");
+            }}
+            placeholder="Enter book title"
+            className={cn("mt-2", INPUT, PAD, errors.title && "border-red-400")}
+          />
+          {errors.title && <p className={ERROR_TEXT}>{errors.title}</p>}
+        </div>
+
         {/* User Name */}
         <div>
           <label htmlFor="user-name" className={LABEL}>
@@ -233,9 +262,16 @@ export default function AddBookForm() {
               setDescription(e.target.value);
               if (errors.description) setError("description");
             }}
-            className={cn("mt-2", INPUT, PAD,errors.description && "border-red-400")}
+            className={cn(
+              "mt-2",
+              INPUT,
+              PAD,
+              errors.description && "border-red-400",
+            )}
           ></textarea>
-          {errors.description && <p className={ERROR_TEXT}>{errors.description}</p>}
+          {errors.description && (
+            <p className={ERROR_TEXT}>{errors.description}</p>
+          )}
         </div>
       </div>
       {success && (

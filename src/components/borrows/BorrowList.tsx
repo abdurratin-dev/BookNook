@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import BorrowListSkeleton from "../skeleton/myBorrowsSkeleton";
 
 const STATUS_STYLES = {
   Active: "bg-[#d3f4e0] text-[#0f7b4f]",
@@ -110,7 +111,7 @@ export default function BorrowList() {
     getBorrowsData();
   }, [user]);
 
-  const hendlereturnBook = async (id: string,name:string) => {
+  const hendlereturnBook = async (id: string, name: string) => {
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/borrows/${id}`,
@@ -119,15 +120,15 @@ export default function BorrowList() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({status:"Returned"}),
+          body: JSON.stringify({ status: "Returned" }),
         },
       );
       const result = await res.json();
       console.log(result);
     } catch (error) {
       toast.error("This book not returned");
-    }finally{
-      toast.success(`${name} are successfully returned`)
+    } finally {
+      toast.success(`${name} are successfully returned`);
       router.refresh();
     }
   };
@@ -140,6 +141,10 @@ export default function BorrowList() {
           : item,
       ),
     );
+
+  if (loading) {
+    return <BorrowListSkeleton />;
+  }
 
   return (
     <div className="mt-8 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
@@ -156,34 +161,37 @@ export default function BorrowList() {
         </thead>
         <tbody>
           {items.map((borrowing) => {
-            return(
-            <tr
-              key={borrowing._id}
-              className="border-b border-slate-50 transition-colors last:border-0 hover:bg-slate-50/70"
-            >
-              <td className="px-6 py-4">
-                <div className="flex items-center gap-3">
-                  <Cover borrowing={borrowing} />
-                  <BookIdentity book={borrowing} />
-                </div>
-              </td>
-              <td className="px-6 py-4 text-sm text-slate-500">
-                {borrowing.receiveremail}
-              </td>
-              <td className="px-6 py-4 text-sm text-slate-500">
-                {borrowing.returnDate}
-              </td>
-              <td className="px-6 py-4">
-                <StatusBadge status={borrowing.status} />
-              </td>
-              <td className="px-6 py-4 text-right">
-                <ReturnButton
-                  status={borrowing.status}
-                  onClick={() => hendlereturnBook(borrowing._id,borrowing.title)}
-                />
-              </td>
-            </tr>
-          )})}
+            return (
+              <tr
+                key={borrowing._id}
+                className="border-b border-slate-50 transition-colors last:border-0 hover:bg-slate-50/70"
+              >
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-3">
+                    <Cover borrowing={borrowing} />
+                    <BookIdentity book={borrowing} />
+                  </div>
+                </td>
+                <td className="px-6 py-4 text-sm text-slate-500">
+                  {borrowing.bookowneremail}
+                </td>
+                <td className="px-6 py-4 text-sm text-slate-500">
+                  {borrowing.returnDate}
+                </td>
+                <td className="px-6 py-4">
+                  <StatusBadge status={borrowing.status} />
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <ReturnButton
+                    status={borrowing.status}
+                    onClick={() =>
+                      hendlereturnBook(borrowing._id, borrowing.title)
+                    }
+                  />
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 

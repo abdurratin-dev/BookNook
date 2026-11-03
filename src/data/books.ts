@@ -8,12 +8,12 @@ export interface Book {
   name: string
   email: string
   /** Optional detail fields — rendered with sensible fallbacks when absent. */
-  pages?: number
+  page?: number
   language?: string
   rating?: number
   reviewCount?: number
   createdAt?: string
-  creatDate?: string
+  createdDate?: string
 }
 
 export interface BookReview {

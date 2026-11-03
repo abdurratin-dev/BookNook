@@ -103,7 +103,7 @@ function InfoCard({ book }: { book: Book }) {
     {
       icon: Hash,
       label: "Pages",
-      value: book.pages ? String(book.pages) : "—",
+      value: book.page ? String(book.page) : "—",
     },
   ];
 
@@ -313,7 +313,7 @@ export default function BookDetails({ bookId }: { bookId: string }) {
             <div className="mt-5 flex flex-wrap gap-x-8 gap-y-2 text-sm text-slate-600">
               <span>
                 <span className="font-semibold text-slate-800">Pages:</span>{" "}
-                {book.pages ?? "—"}
+                {book.page ?? "—"}
               </span>
               <span className="text-slate-300">|</span>
               <span>
@@ -331,7 +331,7 @@ export default function BookDetails({ bookId }: { bookId: string }) {
                 <span className="font-semibold text-slate-800">
                   Added date:
                 </span>{" "}
-                {formatDate(book.createdAt)}
+                {formatDate(book.createdDate)}
               </span>
             </p>
 
