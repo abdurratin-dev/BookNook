@@ -55,8 +55,8 @@ export default function ProfilePage() {
     getBorrowsData();
   }, [user]);
 
-  if(loading){
-    return <ProfileSkeleton />
+  if (loading) {
+    return <ProfileSkeleton />;
   }
   return (
     <div className="mx-auto max-w-7xl min-h-screen bg-[#fcfcfa] px-4 py-8 sm:px-6 lg:px-8">
@@ -80,7 +80,15 @@ export default function ProfilePage() {
               {/* Avatar & User Info */}
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-5">
                 {user?.image ? (
-                  <Image src={user.image} alt={user?.name} width={100} height={100} />
+                  <div className="flex h-24 w-24 items-center justify-center rounded-2xl border-4 border-white bg-[#e7f2ed] text-3xl font-bold text-[#286c5e] shadow-sm sm:h-28 sm:w-28">
+                    <Image
+                      src={user.image}
+                      alt={user?.name}
+                      width={100}
+                      height={100}
+                      className="rounded-xl"
+                    />
+                  </div>
                 ) : (
                   <div className="flex h-24 w-24 items-center justify-center rounded-2xl border-4 border-white bg-[#e7f2ed] text-3xl font-bold text-[#286c5e] shadow-sm sm:h-28 sm:w-28">
                     {user?.name.slice(0, 1)}

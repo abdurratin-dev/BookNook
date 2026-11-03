@@ -29,6 +29,12 @@ export default function LoginPage() {
     toast.success(`${formData.email} You are Successfully Loged In`)
   };
 
+  const hendleGoogleSignup = async() => {
+    const data = await authClient.signIn.social({
+      provider: "google",
+    });
+    console.log(data);
+  };
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#f3f5ef] p-4 sm:p-6">
       <div className="grid w-full max-w-6xl overflow-hidden rounded-2xl border border-emerald-900/10 bg-white shadow-xl md:min-h-[650px] md:grid-cols-[0.9fr_1.1fr]">
@@ -177,6 +183,7 @@ export default function LoginPage() {
             {/* Google Login */}
             <button
               type="button"
+              onClick={hendleGoogleSignup}
               className="flex h-12 w-full items-center justify-center gap-3 rounded-lg border border-slate-200 bg-white text-sm font-semibold text-slate-600 transition hover:bg-slate-50 hover:border-slate-300"
             >
               <svg
