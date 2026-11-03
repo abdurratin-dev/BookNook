@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import BookCard from "@/components/cards/BookCard";
 import { Book } from "@/data/books";
+import BooksSkeleton from "../skeleton/allBookSkeleton";
 
 const PER_PAGE = 9;
 
@@ -59,19 +60,21 @@ export default function BookCatalog() {
   const books = booksData.filter((books) => books.category === category);
   const allBooks = books.length === 0 ? booksData : books;
 
-  // মোট কতটি পেজ হবে
   const totalPages = Math.ceil(allBooks.length / PER_PAGE);
 
-  // কোন পেজের ডাটা দেখাবে
   const startIndex = (currentPage - 1) * PER_PAGE;
   const currentData = allBooks.slice(startIndex, startIndex + PER_PAGE);
 
-  // Page change function
   const goTo = (page: number) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
   };
   
+  if(loading){
+    return(
+      <BooksSkeleton />
+    )
+  }
   return (
     <div>
       {/* Search + category filters */}

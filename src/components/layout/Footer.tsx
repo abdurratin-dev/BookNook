@@ -17,6 +17,8 @@ const CONTACT = [
   { type: "address" as const, value: "Dhaka, Bangladesh" },
 ];
 
+const date = new Date().getFullYear();
+
 export default function Footer() {
   return (
     <footer className="relative isolate overflow-hidden bg-[#0d4d33] text-white">
@@ -81,7 +83,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 border-t border-white/15 pt-6 text-center text-xs text-white/60">
-          © 2025 BookNook. All rights reserved.
+          © {date} BookNook. All rights reserved.
         </div>
       </div>
     </footer>

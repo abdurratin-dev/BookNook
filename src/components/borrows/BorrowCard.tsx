@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Book } from "@/data/books";
 import toast from "react-hot-toast";
 import {
@@ -11,7 +11,6 @@ import {
 } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { authClient } from "@/lib/auth-client";
-import { BookBdata, UserDataContext } from "@/context/userDataContext";
 import { BorrowsListType } from "@/types/borrowListType";
 
 type BorrowBookModalProps = {
@@ -22,7 +21,6 @@ export default function BorrowCard({ book }: BorrowBookModalProps) {
   const [borrowing, setBorrowing] = useState(false);
   const [days, setDays] = useState("7");
   const [fieldError, setFieldError] = useState(false);
-  const contxt = useContext(UserDataContext);
   const { data: session } = authClient.useSession();
   const user = session?.user;
   const handleBorrow = async () => {

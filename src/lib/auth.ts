@@ -7,6 +7,9 @@ const client = new MongoClient(process.env.NEXT_PUBLIC_MONGO_DB_URI as string);
 const db = client.db("assignment8");
 
 export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL!,
+
+  secret: process.env.BETTER_AUTH_SECRET!,
   emailAndPassword: {
     enabled: true,
   },
@@ -19,12 +22,16 @@ export const auth = betterAuth({
   database: mongodbAdapter(db, {
     client,
   }),
-  plugins: [jwt()],
-  session:{
-    cookieCache:{
+  plugins: [
+    jwt({
+      sessionCookieCache: true,
+    }),
+  ],
+  session: {
+    cookieCache: {
       enabled: true,
-      strategy: 'jwt',
-      maxAge: 7*24*60*60,
-    }
-  }
+      strategy: "jwt",
+      maxAge: 7 * 24 * 60 * 60,
+    },
+  },
 });

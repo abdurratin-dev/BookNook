@@ -18,8 +18,6 @@ export default function MyBooksPage() {
   const user = session?.user;
   useEffect(() => {
     const getBooksData = async () => {
-      const { data: token, error } = await authClient.token();
-      console.log(token?.token,error);
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books`);
         const data = await res.json();
@@ -41,6 +39,19 @@ export default function MyBooksPage() {
     return filterBooks;
   });
   const hendleDeleteBook = async (_id: string, title: string) => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/borrows/${_id}`,
+        {
+          method: "DELETE",
+        },
+      );
+      const result = await res.json();
+      console.log(result);
+    } catch (error) {
+      toast.error("Delete faild");
+    }
+
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/books/${_id}`,

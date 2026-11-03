@@ -10,7 +10,6 @@ import { CheckCircle2, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Book } from "@/data/books";
-import { redirect} from "next/navigation";
 import toast from "react-hot-toast";
 
 type Field = "title" | "author" | "category" | "image" | "description";

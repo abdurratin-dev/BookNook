@@ -5,6 +5,8 @@ import Link from "next/link";
 import { BookOpen, Eye, EyeOff, Mail, LockKeyhole } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import toast from "react-hot-toast";
+import { redirect } from "next/navigation";
+import img from "@/assets/images.jpeg"
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -27,6 +29,7 @@ export default function LoginPage() {
       return;
     }
     toast.success(`${formData.email} You are Successfully Loged In`)
+    redirect('/')
   };
 
   const hendleGoogleSignup = async() => {
@@ -42,7 +45,7 @@ export default function LoginPage() {
         <section
           className="relative flex min-h-[260px] flex-col justify-center overflow-hidden bg-cover bg-center p-8 sm:p-12 md:min-h-full"
           style={{
-            backgroundImage: "url('/images/booknook-login-illustration.png')",
+            backgroundImage: "url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRu_AQmOvIFxCnF1ULyvVItzwzHDzKtHtiAdSFue-9eiOUc2Bdh9BryRNY&s=10')",
           }}
         >
           <div className="absolute inset-0 bg-emerald-950/25" />

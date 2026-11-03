@@ -8,12 +8,10 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import BorrowListSkeleton from "../skeleton/myBorrowsSkeleton";
 
-
-function StatusBadge({ status }: { status: any}) {
-
+function StatusBadge({ status }: { status: any }) {
   return (
     <span
-      className={`inline-flex items-center rounded-md px-3 py-1.5 text-[11px] font-bold ${ status === "Active" ? "bg-[#d3f4e0] text-[#0f7b4f]" : "bg-[#e6efe9] text-[#41604f]"}`}
+      className={`inline-flex items-center rounded-md px-3 py-1.5 text-[11px] font-bold ${status === "Active" ? "bg-[#d3f4e0] text-[#0f7b4f]" : "bg-[#e6efe9] text-[#41604f]"}`}
     >
       {status}
     </span>
@@ -85,14 +83,19 @@ export default function BorrowList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [items, setItems] = useState<BorrowsListType[]>([]);
-  const router = useRouter();
   const { data: session } = authClient.useSession();
   const user = session?.user;
   useEffect(() => {
     const getBorrowsData = async () => {
+      const { data: jwttoken, error } = await authClient.token();
       try {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_SERVER_URL}/borrows`,
+          {
+            headers: {
+              authorization: `elitebook ${jwttoken?.token}`,
+            },
+          },
         );
         const data: BorrowsListType[] = await res.json();
         const borrows = data.filter(
@@ -146,51 +149,57 @@ export default function BorrowList() {
   return (
     <div className="mt-8 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
       {/* Desktop table */}
-      <table className="hidden w-full md:table">
-        <thead>
-          <tr className="border-b border-slate-100 text-left text-xs font-bold text-[#0d4d33]">
-            <th className="px-6 py-4">Book</th>
-            <th className="px-6 py-4">Borrowed On</th>
-            <th className="px-6 py-4">Return Date</th>
-            <th className="px-6 py-4">Status</th>
-            <th className="px-6 py-4 text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((borrowing) => {
-            return (
-              <tr
-                key={borrowing._id}
-                className="border-b border-slate-50 transition-colors last:border-0 hover:bg-slate-50/70"
-              >
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <Cover borrowing={borrowing} />
-                    <BookIdentity book={borrowing} />
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-sm text-slate-500">
-                  {borrowing.bookowneremail}
-                </td>
-                <td className="px-6 py-4 text-sm text-slate-500">
-                  {borrowing.returnDate}
-                </td>
-                <td className="px-6 py-4">
-                  <StatusBadge status={borrowing.status} />
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <ReturnButton
-                    status={borrowing.status}
-                    onClick={() =>
-                      hendlereturnBook(borrowing._id, borrowing.title)
-                    }
-                  />
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      {items.length > 0 ? (
+        <table className="hidden w-full md:table">
+          <thead>
+            <tr className="border-b border-slate-100 text-left text-xs font-bold text-[#0d4d33]">
+              <th className="px-6 py-4">Book</th>
+              <th className="px-6 py-4">Borrowed On</th>
+              <th className="px-6 py-4">Return Date</th>
+              <th className="px-6 py-4">Status</th>
+              <th className="px-6 py-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((borrowing) => {
+              return (
+                <tr
+                  key={borrowing._id}
+                  className="border-b border-slate-50 transition-colors last:border-0 hover:bg-slate-50/70"
+                >
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <Cover borrowing={borrowing} />
+                      <BookIdentity book={borrowing} />
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-500">
+                    {borrowing.bookowneremail}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-500">
+                    {borrowing.returnDate}
+                  </td>
+                  <td className="px-6 py-4">
+                    <StatusBadge status={borrowing.status} />
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <ReturnButton
+                      status={borrowing.status}
+                      onClick={() =>
+                        hendlereturnBook(borrowing._id, borrowing.title)
+                      }
+                    />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      ) : (
+        <div className="px-4 py-16 text-center">
+          <p className="font-semibold text-gray-600">No books added your borrows</p>
+        </div>
+      )}
 
       {/* Mobile cards */}
       <ul className="divide-y divide-slate-100 md:hidden">

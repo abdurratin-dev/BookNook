@@ -45,7 +45,7 @@ export default function BookCard({ book }: { book: Book }) {
 
       {/* Book Information */}
       <div className="flex flex-1 flex-col px-1 pt-3">
-        <h3 className="line-clamp-2 min-h-10 text-sm font-bold leading-5 text-slate-800 transition-colors group-hover:text-[#0d4d33]">
+        <h3 className="line-clamp-2 text-sm font-bold leading-5 text-slate-800 transition-colors group-hover:text-[#0d4d33]">
           {book.title}
         </h3>
 
@@ -53,8 +53,9 @@ export default function BookCard({ book }: { book: Book }) {
           By {book.author}
         </p>
 
-        {/* Divider */}
-        <div className="my-3 h-px bg-slate-100" />
+        <p className="mt-1 mb-2 truncate text-xs font-medium text-slate-500">
+          Added on {book.name}
+        </p>
 
         {/* View Details Button */}
         <Link

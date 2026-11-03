@@ -46,6 +46,14 @@ export const heroSlides = [
       "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=1920&q=80",
     position: "center 55%",
   },
+  {
+    id: "slide-3",
+    title: ["Every Book", "New Experiance"],
+    subtitle: "Discover, borrow and enjoy your favorite books from our online library",
+    image:
+      "https://assets.weforum.org/article/image/FDWYzoZ1YruOxYd-sXy9-2BYZ2tFvCpj9tzf9qnTREQ.jpg?w=1024",
+    position: "center 55%",
+  },
 ];
 
 export const stats = [

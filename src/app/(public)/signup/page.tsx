@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import toast from "react-hot-toast";
+import { redirect } from "next/navigation";
 
 function Requirement({
   valid,
@@ -65,6 +66,7 @@ export default function SignupPage() {
       return;
     }
     toast.success(`${data?.user.email} You are Successfully Sign Up`);
+    redirect("/")
   };
 
   const hendleGoogleSignup = async() => {
@@ -81,7 +83,7 @@ export default function SignupPage() {
           className="relative flex min-h-[250px] flex-col justify-center overflow-hidden bg-cover bg-center p-8 sm:p-12 md:min-h-full"
           style={{
             backgroundImage:
-              "url('/images/booknook-register-illustration.png')",
+              "url('https://www.nli.ie/sites/default/files/styles/event_large_large/public/2022-10/nli-oct-screen-res-56.jpg?h=78aab1d8&itok=8MZedc6a')",
           }}
         >
           <div className="absolute inset-0 bg-emerald-950/25" />

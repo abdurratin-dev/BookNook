@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Menu, Search, X } from "lucide-react";
+import { BookOpen, Menu, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NAV_LINKS } from "@/data/navigation";
 import { authClient } from "@/lib/auth-client";
@@ -27,7 +27,8 @@ export default function Navbar() {
           className="flex items-center gap-2"
           onClick={() => setOpen(false)}
         >
-          <span className="text-lg font-extrabold tracking-tight text-[#111827]">
+          <BookOpen className="text-[#0d4d33]"/>
+          <span className="text-lg font-extrabold tracking-tight text-[rgb(13,77,51)]">
             BookNook
           </span>
         </Link>
@@ -58,13 +59,6 @@ export default function Navbar() {
 
         {/* Actions */}
         <div className="ml-auto flex items-center gap-2 md:gap-3">
-          <button
-            type="button"
-            aria-label="Search books"
-            className="grid h-9 w-9 place-items-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-[#0d4d33]"
-          >
-            <Search className="h-[18px] w-[18px]" strokeWidth={1.8} />
-          </button>
           {user ? (
             <NavbarPopOver user={user}/>
           ) : (

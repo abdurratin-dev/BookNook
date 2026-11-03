@@ -1,4 +1,5 @@
 "use client";
+import ProfileEditCard from "@/components/cards/profileEditCard";
 import ProfileSkeleton from "@/components/skeleton/profileSkeleton";
 import { Book } from "@/data/books";
 import { authClient } from "@/lib/auth-client";
@@ -106,21 +107,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <Link
-                href="/profile/edit"
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#286c5e] px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#214d46]"
-              >
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="m16 4 4 4M4 20l4-.8L19 8a2.8 2.8 0 0 0-4-4L4 15z" />
-                </svg>
-                Edit Profile
-              </Link>
+              <ProfileEditCard />
             </div>
 
             {/* Bio */}
@@ -192,76 +179,6 @@ export default function ProfilePage() {
                 </p>
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* Account Settings */}
-        <div className="mt-7 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-7">
-          <h3 className="text-lg font-bold text-[#214d46]">Account Settings</h3>
-          <p className="mt-1 text-xs text-gray-400">
-            Manage your account security and preferences.
-          </p>
-
-          <div className="mt-6 divide-y divide-gray-100">
-            {/* Change Password */}
-            <Link
-              href="/change-password"
-              className="flex items-center justify-between gap-3 py-4 transition hover:bg-[#fafcf9]"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e8f3ed] text-[#286c5e]">
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    viewBox="0 0 24 24"
-                  >
-                    <rect x="4" y="10" width="16" height="11" rx="2" />
-                    <path d="M8 10V7a4 4 0 0 1 8 0v3" />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-[#214d46]">
-                    Change Password
-                  </h4>
-                  <p className="mt-1 text-xs text-gray-400">
-                    Update your account password.
-                  </p>
-                </div>
-              </div>
-              <span className="text-gray-400">→</span>
-            </Link>
-
-            {/* My Books */}
-            <Link
-              href="/my-books"
-              className="flex items-center justify-between gap-3 py-4 transition hover:bg-[#fafcf9]"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e8f3ed] text-[#286c5e]">
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21z" />
-                    <path d="M4 5.5V21M8 7h8M8 11h8" />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-[#214d46]">
-                    My Books
-                  </h4>
-                  <p className="mt-1 text-xs text-gray-400">
-                    View and manage your book collection.
-                  </p>
-                </div>
-              </div>
-              <span className="text-gray-400">→</span>
-            </Link>
           </div>
         </div>
       </div>
