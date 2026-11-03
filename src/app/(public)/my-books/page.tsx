@@ -18,6 +18,8 @@ export default function MyBooksPage() {
   const user = session?.user;
   useEffect(() => {
     const getBooksData = async () => {
+      const { data: token, error } = await authClient.token();
+      console.log(token?.token,error);
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books`);
         const data = await res.json();
