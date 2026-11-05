@@ -15,16 +15,22 @@ Users can create an account, add their own books, manage their book collections,
 - **Responsive Design:** Enjoy a smooth browsing experience across desktop, tablet, and mobile devices.
 - **Modern UI:** Clean design with an intuitive navigation system.
 
-### Technologies Used
-
-- Next.js (App Router)
+### Tech Stack: 
+FrontEnd: 
+- Next JS
+- Hero UI
+- ShadCn UI 
 - TypeScript
-- Tailwind CSS
-- HeroUI
-- Better Auth
-- MongoDB
-- Express.js
-- JWT Authentication
+
+Authentication & Authorization: 
+- BetterAuth 
+- MongoDB Adapter 
+- JWT
+
+Backend: 
+- Express JS 
+- MongoDB 
+- JavaScript
 
 **Live Website:** https://book-nook-eight-fawn.vercel.app/
 
