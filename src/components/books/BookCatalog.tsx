@@ -26,9 +26,7 @@ function matches(book: Book, { query, category }: Filters) {
 }
 
 export default function BookCatalog() {
-  const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
-  const [page, setPage] = useState(1);
   const [booksData, setBooksData] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -59,16 +57,6 @@ export default function BookCatalog() {
 
   const books = booksData.filter((books) => books.category === category);
   const allBooks = books.length === 0 ? booksData : books;
-
-  const totalPages = Math.ceil(allBooks.length / PER_PAGE);
-
-  const startIndex = (currentPage - 1) * PER_PAGE;
-  const currentData = allBooks.slice(startIndex, startIndex + PER_PAGE);
-
-  const goTo = (page: number) => {
-    if (page < 1 || page > totalPages) return;
-    setCurrentPage(page);
-  };
   
   if(loading){
     return(
@@ -89,7 +77,6 @@ export default function BookCatalog() {
             value={category}
             onChange={(event) => {
               setCategory(event.target.value);
-              setPage(1);
             }}
             aria-label="Filter by category"
             className="h-11 w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 pr-9 text-sm text-slate-700 outline-none transition-colors focus:border-[#0d4d33] focus:ring-2 focus:ring-[#0d4d33]/15"
@@ -124,52 +111,6 @@ export default function BookCatalog() {
             Try a different search term or pick another category.
           </p>
         </div>
-      )}
-
-      {/* Pagination */}
-      {allBooks.length > PER_PAGE && (
-        <nav
-          aria-label="Pagination"
-          className="mt-10 flex items-center justify-center gap-2"
-        >
-          <button
-            type="button"
-            onClick={() => goTo(currentPage - 1)}
-            disabled={currentPage === 1}
-            aria-label="Previous page"
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition-colors hover:border-[#0d4d33] hover:text-[#0d4d33] disabled:pointer-events-none disabled:opacity-40"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-
-          {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-            (number) => (
-              <button
-                key={number}
-                type="button"
-                onClick={() => goTo(number)}
-                aria-current={number === currentPage ? "page" : undefined}
-                className={`h-9 min-w-9 rounded-lg px-2 text-sm font-bold transition-colors ${
-                  number === currentPage
-                    ? "bg-[#0d4d33] text-white shadow-sm"
-                    : "border border-slate-200 bg-white text-slate-600 hover:border-[#0d4d33] hover:text-[#0d4d33]"
-                }`}
-              >
-                {number}
-              </button>
-            ),
-          )}
-
-          <button
-            type="button"
-            onClick={() => goTo(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            aria-label="Next page"
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition-colors hover:border-[#0d4d33] hover:text-[#0d4d33] disabled:pointer-events-none disabled:opacity-40"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        </nav>
       )}
     </div>
   );

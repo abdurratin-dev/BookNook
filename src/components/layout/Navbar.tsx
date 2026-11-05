@@ -27,7 +27,7 @@ export default function Navbar() {
           className="flex items-center gap-2"
           onClick={() => setOpen(false)}
         >
-          <BookOpen className="text-[#0d4d33]"/>
+          <BookOpen className="text-[#0d4d33]" />
           <span className="text-lg font-extrabold tracking-tight text-[rgb(13,77,51)]">
             BookNook
           </span>
@@ -60,18 +60,20 @@ export default function Navbar() {
         {/* Actions */}
         <div className="ml-auto flex items-center gap-2 md:gap-3">
           {user ? (
-            <NavbarPopOver user={user}/>
+            <div className="hidden md:flex">
+              <NavbarPopOver user={user} />
+            </div>
           ) : (
             <>
               <Link
                 href="/login"
-                className="hidden rounded-lg border border-[#0d4d33]/35 bg-white px-4 py-2 text-[13px] font-medium text-[#0d4d33] transition-colors hover:bg-[#0d4d33]/5 sm:inline-flex"
+                className="hidden rounded-lg border border-[#0d4d33]/35 bg-white px-4 py-2 text-[13px] font-medium text-[#0d4d33] transition-colors hover:bg-[#0d4d33]/5 md:inline-flex"
               >
                 Login
               </Link>
               <Link
                 href="/signup"
-                className="hidden rounded-lg bg-[#0d4d33] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#0a3d28] sm:inline-flex"
+                className="hidden rounded-lg bg-[#0d4d33] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#0a3d28] md:inline-flex"
               >
                 Register
               </Link>
@@ -112,20 +114,26 @@ export default function Navbar() {
             ))}
           </nav>
           <div className="mt-3 flex gap-2 sm:hidden">
-            <Link
-              href="/login"
-              onClick={() => setOpen(false)}
-              className="flex-1 rounded-lg border border-[#0d4d33]/35 bg-white px-4 py-2 text-center text-sm font-medium text-[#0d4d33]"
-            >
-              Login
-            </Link>
-            <Link
-              href="/signup"
-              onClick={() => setOpen(false)}
-              className="flex-1 rounded-lg bg-[#0d4d33] px-4 py-2 text-center text-sm font-semibold text-white"
-            >
-              Register
-            </Link>
+            {user ? (
+              <NavbarPopOver user={user} />
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  onClick={() => setOpen(false)}
+                  className="flex-1 rounded-lg border border-[#0d4d33]/35 bg-white px-4 py-2 text-center text-sm font-medium text-[#0d4d33]"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/signup"
+                  onClick={() => setOpen(false)}
+                  className="flex-1 rounded-lg bg-[#0d4d33] px-4 py-2 text-center text-sm font-semibold text-white"
+                >
+                  Register
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}

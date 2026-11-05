@@ -39,11 +39,15 @@ export default function MyBooksPage() {
     return filterBooks;
   });
   const hendleDeleteBook = async (_id: string, title: string) => {
+    const { data: jwttoken, error } = await authClient.token();
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/borrows/${_id}`,
         {
           method: "DELETE",
+          headers:{
+            authorization: `elitebook ${jwttoken?.token}`,
+          }
         },
       );
       const result = await res.json();
@@ -57,6 +61,9 @@ export default function MyBooksPage() {
         `${process.env.NEXT_PUBLIC_SERVER_URL}/books/${_id}`,
         {
           method: "DELETE",
+          headers:{
+             authorization: `elitebook ${jwttoken?.token}`,
+          }
         },
       );
       const result = await res.json();
@@ -139,7 +146,7 @@ export default function MyBooksPage() {
               </div>
 
               {/* Book Rows */}
-              {booksData.length > 0 ? (
+              {filteredBooks.length > 0 ? (
                 filteredBooks.map((book) => (
                   <div
                     key={book._id}
@@ -151,7 +158,7 @@ export default function MyBooksPage() {
                         className={`flex h-[65px] w-[48px] shrink-0 flex-col items-center justify-center rounded-md border border-black/10 p-1 text-center shadow-sm`}
                       >
                         <Image
-                          src={book?.image}
+                          src={book?.image || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmQSVoOtqLdG19ckCeLFCvJS5IKrnnqS8yLsgCeg0LhIDVQpOh1y8hXhk&s=10"}
                           alt={book?.title}
                           width={50}
                           height={50}

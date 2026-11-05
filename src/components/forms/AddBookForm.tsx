@@ -70,7 +70,6 @@ export default function AddBookForm() {
     }
 
     const date = new Date().toDateString();
-    console.log(date);
     const formData = {
       title,
       author,
@@ -82,11 +81,12 @@ export default function AddBookForm() {
       createdDate: date,
       page,
     };
-
+    const { data: jwttoken, error } = await authClient.token();
     const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        authorization: `elitebook ${jwttoken?.token}`,
       },
       body: JSON.stringify(formData),
     });

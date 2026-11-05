@@ -11,6 +11,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Book } from "@/data/books";
 import toast from "react-hot-toast";
+import { authClient } from "@/lib/auth-client";
 
 type Field = "title" | "author" | "category" | "image" | "description";
 type Errors = Partial<Record<Field, string>>;
@@ -67,7 +68,7 @@ export function EditBook({ book }: { book: Book }) {
       image,
       description,
     };
-
+    const { data: jwttoken, error } = await authClient.token();
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/books/${book._id}`,
@@ -75,6 +76,7 @@ export function EditBook({ book }: { book: Book }) {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+             authorization: `elitebook ${jwttoken?.token}`,
           },
           body: JSON.stringify(formData),
         },
@@ -123,6 +125,7 @@ export function EditBook({ book }: { book: Book }) {
                   value={title}
                   onChange={(e) => {
                     setTitle(e.target.value);
+                    if (errors.title) setError("title");
                   }}
                   placeholder="Enter book title"
                   className={cn(
@@ -145,6 +148,7 @@ export function EditBook({ book }: { book: Book }) {
                   value={author}
                   onChange={(e) => {
                     setAuthor(e.target.value);
+                    if (errors.author) setError("author");
                   }}
                   placeholder="Enter author name"
                   className={cn(
@@ -168,6 +172,7 @@ export function EditBook({ book }: { book: Book }) {
                     value={category}
                     onChange={(e) => {
                       setCategory(e.target.value);
+                      if (errors.category) setError("category");
                     }}
                     className={cn(
                       INPUT,
@@ -199,6 +204,7 @@ export function EditBook({ book }: { book: Book }) {
                   placeholder="Enter book image url"
                   onChange={(e) => {
                     setImage(e.target.value);
+                    if (errors.image) setError("image");
                   }}
                   className={cn(
                     "mt-2",
@@ -221,6 +227,7 @@ export function EditBook({ book }: { book: Book }) {
                   value={description}
                   onChange={(e) => {
                     setDescription(e.target.value);
+                    if (errors.description) setError("description");
                   }}
                   className={cn(
                     "mt-2",

@@ -32,13 +32,19 @@ export default function BorrowCard({ book }: BorrowBookModalProps) {
       setFieldError(true);
       return;
     }
+    const { data: jwttoken, error } = await authClient.token();
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/borrows`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/borrows`,{
+        headers:{
+          authorization: `elitebook ${jwttoken?.token}`,
+        }
+      });
       const data: BorrowsListType[] = await res.json();
       const chackData = data.some(
         (bookU) =>
           bookU.bookId === book._id && bookU.receiveremail === user.email,
       );
+      console.log(chackData);
       if (chackData) {
         toast.error("You are already added this book on your Borrow list");
         return;
@@ -52,7 +58,9 @@ export default function BorrowCard({ book }: BorrowBookModalProps) {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/borrows`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" ,
+          authorization: `elitebook ${jwttoken?.token}`,
+        },
         body: JSON.stringify({
           bookId: book?._id,
           bookowneremail: email,

@@ -5,7 +5,6 @@ import { IUserDataType } from "@/types/userData";
 import {Avatar, Button, Popover} from "@heroui/react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import {useState} from "react";
 import { GoSignOut } from "react-icons/go";
 
 export function NavbarPopOver({user}:{user:IUserDataType}) {
@@ -14,7 +13,7 @@ export function NavbarPopOver({user}:{user:IUserDataType}) {
         redirect("/login")
     }
   return (
-    <div className="flex items-center gap-6">
+    <div className="flex items-center gap-6 ">
       <Popover>
         <Popover.Trigger aria-label="User profile">
           <div className="flex items-center gap-2">

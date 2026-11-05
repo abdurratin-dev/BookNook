@@ -113,12 +113,14 @@ export default function BorrowList() {
 
   const hendlereturnBook = async (id: string, name: string) => {
     try {
+      const { data: jwttoken, error } = await authClient.token();
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/borrows/${id}`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            authorization: `elitebook ${jwttoken?.token}`,
           },
           body: JSON.stringify({ status: "Returned" }),
         },
@@ -132,15 +134,6 @@ export default function BorrowList() {
       window.location.reload();
     }
   };
-
-  const returnBook = (id: string) =>
-    setItems((current) =>
-      current.map((item) =>
-        item._id === id && item.status === "Active"
-          ? { ...item, status: "Returned" as const }
-          : item,
-      ),
-    );
 
   if (loading) {
     return <BorrowListSkeleton />;
@@ -225,7 +218,7 @@ export default function BorrowList() {
                   <StatusBadge status={borrowing.status} />
                   <ReturnButton
                     status={borrowing.status}
-                    onClick={() => returnBook(borrowing._id)}
+                    onClick={() => hendlereturnBook(borrowing._id, borrowing.title)}
                   />
                 </div>
               </div>
