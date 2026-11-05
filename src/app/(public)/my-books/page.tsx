@@ -6,8 +6,9 @@ import { Book } from "@/data/books";
 import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+
 export default function MyBooksPage() {
   const [search, setSearch] = useState("");
   const [booksData, setBooksData] = useState<Book[]>([]);

@@ -55,6 +55,16 @@ export default function BorrowCard({ book }: BorrowBookModalProps) {
     setBorrowing(true);
     const date = new Date().toDateString().toString();
     const { image, title, author, category, description, email } = book;
+    const copies = {copies : String(Number(book.copies) - 1)};
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books/${book._id}`,{
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+             authorization: `elitebook ${jwttoken?.token}`,
+          },
+          body: JSON.stringify(copies),
+        },);
+    const data = await response.json();
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/borrows`, {
         method: "POST",
@@ -77,7 +87,6 @@ export default function BorrowCard({ book }: BorrowBookModalProps) {
       });
       if (!res.ok) throw new Error("Borrow failed");
       const result = await res.json();
-      console.log(result);
     } catch {
       toast.error("Could not borrow this book right now.");
     } finally {

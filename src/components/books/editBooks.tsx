@@ -13,7 +13,7 @@ import { Book } from "@/data/books";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 
-type Field = "title" | "author" | "category" | "image" | "description";
+type Field = "title" | "author" | "category" | "image" | "description" | "copies";
 type Errors = Partial<Record<Field, string>>;
 
 const CATEGORIES = [
@@ -36,6 +36,7 @@ export function EditBook({ book }: { book: Book }) {
   const [category, setCategory] = useState(book.category);
   const [image, setImage] = useState(book.image);
   const [description, setDescription] = useState(book.description);
+  const [copies,setCopies] = useState(book.copies);
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
 
@@ -50,13 +51,15 @@ export function EditBook({ book }: { book: Book }) {
     if (!category) next.category = "Please select a category.";
     if (!image.trim()) next.image = "Image url is required.";
     if (!description.trim()) next.description = "Description is required.";
+    if (!copies.trim()) next.copies = "Copies is required.";
     setErrors(next);
     if (
       !title.trim() ||
       !author.trim() ||
       !image.trim() ||
       !category ||
-      !description.trim()
+      !description.trim() ||
+      !copies.trim()
     ) {
       return;
     }
@@ -67,6 +70,7 @@ export function EditBook({ book }: { book: Book }) {
       category,
       image,
       description,
+      copies,
     };
     const { data: jwttoken, error } = await authClient.token();
     try {
@@ -205,6 +209,25 @@ export function EditBook({ book }: { book: Book }) {
                   onChange={(e) => {
                     setImage(e.target.value);
                     if (errors.image) setError("image");
+                  }}
+                  className={cn(
+                    "mt-2",
+                    INPUT,
+                    PAD,
+                    errors.image && "border-red-400",
+                  )}
+                />
+                {errors.image && <p className={ERROR_TEXT}>{errors.image}</p>}
+              </div>
+              <div>
+                <span className={LABEL}>Copies</span>
+                <input
+                  id="book-copies"
+                  value={copies}
+                  placeholder="Enter Availble Copies"
+                  onChange={(e) => {
+                    setCopies(e.target.value);
+                    if (errors.image) setError("copies");
                   }}
                   className={cn(
                     "mt-2",

@@ -7,6 +7,7 @@ export interface Book {
   description: string
   name: string
   email: string
+  copies : string
   /** Optional detail fields — rendered with sensible fallbacks when absent. */
   page?: number
   language?: string

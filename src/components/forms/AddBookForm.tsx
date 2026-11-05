@@ -15,7 +15,7 @@ const CATEGORIES = [
 
 /** Demo values — replace with the authenticated session later if you want. */
 
-type Field = "title" | "author" | "category" | "image" | "description" | "page";
+type Field = "title" | "author" | "category" | "image" | "description" | "page" | "copies";
 type Errors = Partial<Record<Field, string>>;
 
 const LABEL = "block text-sm font-medium text-slate-700";
@@ -32,6 +32,7 @@ export default function AddBookForm() {
   const [category, setCategory] = useState("");
   const [image, setImage] = useState("");
   const [description, setDescription] = useState("");
+  const [copies,setCopies] = useState("");
   const [page, setPage] = useState("");
   const [errors, setErrors] = useState<Errors>({});
   const [success, setSuccess] = useState(false);
@@ -57,13 +58,15 @@ export default function AddBookForm() {
     if (!category) next.category = "Please select a category.";
     if (!image.trim()) next.image = "Image url is required.";
     if (!description.trim()) next.description = "Description is required.";
+    if (!copies.trim()) next.copies = "Copies is required.";
     setErrors(next);
     if (
       !title.trim() ||
       !author.trim() ||
       !image.trim() ||
       !category ||
-      !description.trim()
+      !description.trim() ||
+      !copies.trim()
     ) {
       console.log(description);
       return;
@@ -80,6 +83,7 @@ export default function AddBookForm() {
       email: user?.email,
       createdDate: date,
       page,
+      copies,
     };
     const { data: jwttoken, error } = await authClient.token();
     const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books`, {
@@ -211,6 +215,21 @@ export default function AddBookForm() {
             className={cn("mt-2", INPUT, PAD, errors.title && "border-red-400")}
           />
           {errors.title && <p className={ERROR_TEXT}>{errors.title}</p>}
+        </div>
+
+        <div>
+          <span className={LABEL}>Copies</span>
+          <input
+            id="book-copies"
+            value={copies}
+            placeholder="Enter Availble Copies"
+            onChange={(e) => {
+              setCopies(e.target.value);
+              if (errors.image) setError("copies");
+            }}
+            className={cn("mt-2", INPUT, PAD, errors.image && "border-red-400")}
+          />
+          {errors.image && <p className={ERROR_TEXT}>{errors.image}</p>}
         </div>
 
         {/* User Name */}

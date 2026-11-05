@@ -111,9 +111,27 @@ export default function BorrowList() {
     getBorrowsData();
   }, [user]);
 
-  const hendlereturnBook = async (id: string, name: string) => {
+  const hendlereturnBook = async (id: string, bookId: string, name: string) => {
     try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/books/${bookId}`,
+      );
+      const books = await response.json();
+      const copies = {
+        copies: String(Number(books.copies) + 1),
+        status: "Returned",
+      };
       const { data: jwttoken, error } = await authClient.token();
+      const upres = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books/${bookId}`,{
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+             authorization: `elitebook ${jwttoken?.token}`,
+          },
+          body: JSON.stringify(copies),
+        },);
+      const  rres = await upres.json();
+      console.log(rres);
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/borrows/${id}`,
         {
@@ -122,7 +140,7 @@ export default function BorrowList() {
             "Content-Type": "application/json",
             authorization: `elitebook ${jwttoken?.token}`,
           },
-          body: JSON.stringify({ status: "Returned" }),
+          body: JSON.stringify({status: "Returned"}),
         },
       );
       const result = await res.json();
@@ -131,7 +149,9 @@ export default function BorrowList() {
       toast.error("This book not returned");
     } finally {
       toast.success(`${name} are successfully returned`);
-      window.location.reload();
+      setTimeout(()=>{
+        window.location.reload()
+      },3000)
     }
   };
 
@@ -190,7 +210,9 @@ export default function BorrowList() {
         </table>
       ) : (
         <div className="px-4 py-16 text-center">
-          <p className="font-semibold text-gray-600">No books added your borrows</p>
+          <p className="font-semibold text-gray-600">
+            No books added your borrows
+          </p>
         </div>
       )}
 
@@ -218,7 +240,13 @@ export default function BorrowList() {
                   <StatusBadge status={borrowing.status} />
                   <ReturnButton
                     status={borrowing.status}
-                    onClick={() => hendlereturnBook(borrowing._id, borrowing.title)}
+                    onClick={() =>
+                      hendlereturnBook(
+                        borrowing._id,
+                        borrowing.bookId,
+                        borrowing.title,
+                      )
+                    }
                   />
                 </div>
               </div>
