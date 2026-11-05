@@ -100,7 +100,7 @@ export default function BorrowList() {
       const { data: jwttoken, error } = await authClient.token();
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/borrows`,
+          `${process.env.SERVER_URL}/borrows`,
           {
             headers: {
               authorization: `elitebook ${jwttoken?.token}`,
@@ -124,7 +124,7 @@ export default function BorrowList() {
   const hendlereturnBook = async (id: string, bookId: string, name: string) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/books/${bookId}`,
+        `${process.env.SERVER_URL}/books/${bookId}`,
       );
       const books = await response.json();
       const copies = {
@@ -132,7 +132,7 @@ export default function BorrowList() {
         status: "Returned",
       };
       const { data: jwttoken, error } = await authClient.token();
-      const upres = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books/${bookId}`,{
+      const upres = await fetch(`${process.env.SERVER_URL}/books/${bookId}`,{
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -143,7 +143,7 @@ export default function BorrowList() {
       const  rres = await upres.json();
       console.log(rres);
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/borrows/${id}`,
+        `${process.env.SERVER_URL}/borrows/${id}`,
         {
           method: "PATCH",
           headers: {

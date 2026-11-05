@@ -85,7 +85,7 @@ export default function AddBookForm() {
       copies,
     };
     const { data: jwttoken, error } = await authClient.token();
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books`, {
+    const res = await fetch(`${process.env.SERVER_URL}/books`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

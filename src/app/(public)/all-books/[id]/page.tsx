@@ -8,7 +8,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/books/${id}`,
+      `${process.env.SERVER_URL}/books/${id}`,
     );
     if (!res.ok) return { title: "Book Not Found · BookNook" };
     const data = await res.json();

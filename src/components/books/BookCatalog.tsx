@@ -24,7 +24,7 @@ export default function BookCatalog() {
   useEffect(() => {
     const getBooksData = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books`);
+        const res = await fetch(`${process.env.SERVER_URL}/books`);
         const data = await res.json();
         setBooksData(Array.isArray(data) ? data : []);
       } catch {

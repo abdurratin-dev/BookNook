@@ -22,7 +22,7 @@ export default function MyBooksPage() {
   useEffect(() => {
     const getBooksData = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books`);
+        const res = await fetch(`${process.env.SERVER_URL}/books`);
         const data = await res.json();
         setBooksData(data);
       } catch (error) {
@@ -43,7 +43,7 @@ export default function MyBooksPage() {
     const { data: jwttoken, error } = await authClient.token();
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/borrows/${_id}`,
+        `${process.env.SERVER_URL}/borrows/${_id}`,
         {
           method: "DELETE",
           headers:{
@@ -59,7 +59,7 @@ export default function MyBooksPage() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/books/${_id}`,
+        `${process.env.SERVER_URL}/books/${_id}`,
         {
           method: "DELETE",
           headers:{

@@ -39,7 +39,7 @@ export default function BorrowCard({ book }: BorrowBookModalProps) {
     }
     const { data: jwttoken } = await authClient.token();
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/borrows`, {
+      const res = await fetch(`${process.env.SERVER_URL}/borrows`, {
         headers: {
           authorization: `elitebook ${jwttoken?.token}`,
         },
@@ -61,7 +61,7 @@ export default function BorrowCard({ book }: BorrowBookModalProps) {
     const date = new Date().toDateString().toString();
     const { image, title, author, category, description, email } = book;
     const copies = { copies: String(Number(book.copies) - 1) };
-    await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books/${book._id}`, {
+    await fetch(`${process.env.SERVER_URL}/books/${book._id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -71,7 +71,7 @@ export default function BorrowCard({ book }: BorrowBookModalProps) {
     });
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/borrows`, {
+      const res = await fetch(`${process.env.SERVER_URL}/borrows`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -20,7 +20,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const getBooksData = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books`);
+        const res = await fetch(`${process.env.SERVER_URL}/books`);
         const data: Book[] = await res.json();
         const userBook = data.filter((book) => book.email === user?.email);
         setAddBook(userBook);
@@ -34,7 +34,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const getBorrowsData = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/borrows`);
+        const res = await fetch(`${process.env.SERVER_URL}/borrows`);
         const data: BorrowsListType[] = await res.json();
         const borrows = data.filter(
           (borrow) => borrow.receiveremail === user?.email,

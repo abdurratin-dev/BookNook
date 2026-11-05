@@ -76,7 +76,7 @@ export function EditBook({ book }: { book: Book }) {
     const { data: jwttoken, error } = await authClient.token();
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/books/${book._id}`,
+        `${process.env.SERVER_URL}/books/${book._id}`,
         {
           method: "PATCH",
           headers: {
