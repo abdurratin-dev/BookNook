@@ -30,7 +30,7 @@ export function NavbarPopOver({
               <Avatar.Image alt={user?.name} src={user?.image || ""} />
               <Avatar.Fallback>{user?.name.slice(0, 1)}</Avatar.Fallback>
             </Avatar>
-            <div className="hidden max-w-[9rem] flex-col text-left sm:flex lg:max-w-[11rem]">
+            <div className="max-w-[9rem] flex-col text-left flex lg:max-w-[11rem]">
               <p className="truncate text-sm font-semibold text-slate-800">
                 {user?.name}
               </p>

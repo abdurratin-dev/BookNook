@@ -294,7 +294,7 @@ export default function BookDetails({ bookId }: { bookId: string }) {
     const getBook = async () => {
       try {
         const res = await fetch(
-          `${process.env.SERVER_URL}/books/${bookId}`,
+          `https://book-nook-server.vercel.app/books/${bookId}`,
         );
         if (!res.ok) throw new Error("Book not found");
         const data = await res.json();
@@ -318,7 +318,7 @@ export default function BookDetails({ bookId }: { bookId: string }) {
 
     (async () => {
       try {
-        const res = await fetch(`${process.env.SERVER_URL}/books`);
+        const res = await fetch(`https://book-nook-server.vercel.app/books`);
         const data = await res.json();
         const list: Book[] = Array.isArray(data) ? data : (data.books ?? []);
         if (!cancelled) {

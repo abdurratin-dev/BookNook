@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import BorrowListSkeleton from "../skeleton/myBorrowsSkeleton";
+import ReturnPopover from "../popover/ReturnPopover";
 
 function StatusBadge({ status }: { status: string }) {
   return (
@@ -37,18 +38,7 @@ function ReturnButton({
 }) {
   const disabled = status === "Returned";
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={`inline-flex h-9 items-center justify-center rounded-xl border px-4 text-xs font-bold transition-colors ${
-        disabled
-          ? "cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400"
-          : "border-[#0d4d33]/40 bg-white text-[#0d4d33] hover:bg-[#0d4d33] hover:text-white"
-      }`}
-    >
-      Return
-    </button>
+    <ReturnPopover onClick={onClick} disabled={disabled}/>
   );
 }
 
@@ -100,7 +90,7 @@ export default function BorrowList() {
       const { data: jwttoken, error } = await authClient.token();
       try {
         const res = await fetch(
-          `${process.env.SERVER_URL}/borrows`,
+          `https://book-nook-server.vercel.app/borrows`,
           {
             headers: {
               authorization: `elitebook ${jwttoken?.token}`,
@@ -124,7 +114,7 @@ export default function BorrowList() {
   const hendlereturnBook = async (id: string, bookId: string, name: string) => {
     try {
       const response = await fetch(
-        `${process.env.SERVER_URL}/books/${bookId}`,
+        `https://book-nook-server.vercel.app/books/${bookId}`,
       );
       const books = await response.json();
       const copies = {
@@ -132,7 +122,7 @@ export default function BorrowList() {
         status: "Returned",
       };
       const { data: jwttoken, error } = await authClient.token();
-      const upres = await fetch(`${process.env.SERVER_URL}/books/${bookId}`,{
+      const upres = await fetch(`https://book-nook-server.vercel.app/books/${bookId}`,{
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -143,7 +133,7 @@ export default function BorrowList() {
       const  rres = await upres.json();
       console.log(rres);
       const res = await fetch(
-        `${process.env.SERVER_URL}/borrows/${id}`,
+        `https://book-nook-server.vercel.app/borrows/${id}`,
         {
           method: "PATCH",
           headers: {

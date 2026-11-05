@@ -8,7 +8,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
   try {
     const res = await fetch(
-      `${process.env.SERVER_URL}/books/${id}`,
+      `https://book-nook-server.vercel.app/books/${id}`,
     );
     if (!res.ok) return { title: "Book Not Found · BookNook" };
     const data = await res.json();

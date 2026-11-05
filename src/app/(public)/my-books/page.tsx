@@ -2,6 +2,7 @@
 
 import { EditBook } from "@/components/books/editBooks";
 import PageHeader from "@/components/layout/PageHeader";
+import DeletePopover from "@/components/popover/DeletePopover";
 import MyBooksSkeleton from "@/components/skeleton/myBookSkeleton";
 import { Book } from "@/data/books";
 import { authClient } from "@/lib/auth-client";
@@ -22,7 +23,7 @@ export default function MyBooksPage() {
   useEffect(() => {
     const getBooksData = async () => {
       try {
-        const res = await fetch(`${process.env.SERVER_URL}/books`);
+        const res = await fetch(`https://book-nook-server.vercel.app/books`);
         const data = await res.json();
         setBooksData(data);
       } catch (error) {
@@ -39,42 +40,6 @@ export default function MyBooksPage() {
     if (!search.trim()) return true;
     return book.title.toLowerCase().includes(search.toLowerCase());
   });
-  const hendleDeleteBook = async (_id: string, title: string) => {
-    const { data: jwttoken, error } = await authClient.token();
-    try {
-      const res = await fetch(
-        `${process.env.SERVER_URL}/borrows/${_id}`,
-        {
-          method: "DELETE",
-          headers:{
-            authorization: `elitebook ${jwttoken?.token}`,
-          }
-        },
-      );
-      const result = await res.json();
-      console.log(result);
-    } catch (error) {
-      toast.error("Delete faild");
-    }
-
-    try {
-      const res = await fetch(
-        `${process.env.SERVER_URL}/books/${_id}`,
-        {
-          method: "DELETE",
-          headers:{
-             authorization: `elitebook ${jwttoken?.token}`,
-          }
-        },
-      );
-      const result = await res.json();
-      console.log(result);
-    } catch (error) {
-      toast.error("Delete faild");
-    }
-    toast.success(`${title} is deleted`);
-    window.location.reload();
-  };
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12">
@@ -185,13 +150,7 @@ export default function MyBooksPage() {
                     <div className="flex items-center gap-2 md:justify-center">
                       <EditBook book={book} />
 
-                      <button
-                        onClick={() => hendleDeleteBook(book?._id, book.title)}
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-white px-3 py-2 text-xs font-bold text-red-600 transition-colors hover:border-red-300 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                        Delete
-                      </button>
+                      <DeletePopover book={book}/>
                     </div>
                   </div>
                 ))

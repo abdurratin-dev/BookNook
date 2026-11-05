@@ -4,7 +4,7 @@ import BookCard from "../cards/BookCard";
 import { Book } from "@/data/books";
 
 export default async function NewArrivals() {
-  const res = await fetch(`${process.env.SERVER_URL}/books`);
+  const res = await fetch(`https://book-nook-server.vercel.app/books`);
   const data: Book[] = await res.json();
   return (
     <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">

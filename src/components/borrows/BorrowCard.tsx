@@ -14,6 +14,7 @@ import { Button } from "../ui/button";
 import { authClient } from "@/lib/auth-client";
 import { BorrowsListType } from "@/types/borrowListType";
 import { ArrowRight, BookOpen, CalendarDays } from "lucide-react";
+import { redirect } from "next/navigation";
 
 type BorrowBookModalProps = {
   book: Book;
@@ -39,7 +40,7 @@ export default function BorrowCard({ book }: BorrowBookModalProps) {
     }
     const { data: jwttoken } = await authClient.token();
     try {
-      const res = await fetch(`${process.env.SERVER_URL}/borrows`, {
+      const res = await fetch(`https://book-nook-server.vercel.app/borrows`, {
         headers: {
           authorization: `elitebook ${jwttoken?.token}`,
         },
@@ -61,7 +62,7 @@ export default function BorrowCard({ book }: BorrowBookModalProps) {
     const date = new Date().toDateString().toString();
     const { image, title, author, category, description, email } = book;
     const copies = { copies: String(Number(book.copies) - 1) };
-    await fetch(`${process.env.SERVER_URL}/books/${book._id}`, {
+    await fetch(`https://book-nook-server.vercel.app/books/${book._id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -71,7 +72,7 @@ export default function BorrowCard({ book }: BorrowBookModalProps) {
     });
 
     try {
-      const res = await fetch(`${process.env.SERVER_URL}/borrows`, {
+      const res = await fetch(`https://book-nook-server.vercel.app/borrows`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -93,10 +94,13 @@ export default function BorrowCard({ book }: BorrowBookModalProps) {
       });
       if (!res.ok) throw new Error("Borrow failed");
       await res.json();
-      toast.success(`${title} borrowed successfully.`);
     } catch {
       toast.error("Could not borrow this book right now.");
     } finally {
+      toast.success(`${title} borrowed successfully.`);
+      setTimeout(()=>{
+        window.location.reload();
+      },3000)
       setBorrowing(false);
     }
   };

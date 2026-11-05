@@ -24,9 +24,10 @@ export default function BookCatalog() {
   useEffect(() => {
     const getBooksData = async () => {
       try {
-        const res = await fetch(`${process.env.SERVER_URL}/books`);
+        const res = await fetch(`https://book-nook-server.vercel.app/books`);
         const data = await res.json();
-        setBooksData(Array.isArray(data) ? data : []);
+        setBooksData(data);
+        console.log(data);
       } catch {
         setBooksData([]);
       } finally {
