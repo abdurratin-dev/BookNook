@@ -199,7 +199,7 @@ export default function BorrowList() {
                     <ReturnButton
                       status={borrowing.status}
                       onClick={() =>
-                        hendlereturnBook(borrowing._id, borrowing.title)
+                        hendlereturnBook(borrowing._id,borrowing.bookId, borrowing.title)
                       }
                     />
                   </td>
