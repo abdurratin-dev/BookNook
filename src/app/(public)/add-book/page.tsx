@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { BookOpen } from "lucide-react";
 import AddBookForm from "@/components/forms/AddBookForm";
+import PageHeader from "@/components/layout/PageHeader";
 
 export const metadata: Metadata = {
   title: "Add a New Book · BookNook",
@@ -99,17 +101,17 @@ function BookStackArt({ className = "" }: { className?: string }) {
 export default function AddBookPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12">
-      <h1 className="font-display text-3xl font-bold text-[#0d4d33] sm:text-4xl">
-        Add a New Book
-      </h1>
-      <p className="mt-2 text-sm text-slate-500">
-        Fill in the details to add a new book to the library.
-      </p>
+      <PageHeader
+        icon={BookOpen}
+        eyebrow="Contribute"
+        title="Add a New Book"
+        description="Fill in the details to add a new book to the BookNook library for everyone to borrow."
+      />
 
-      <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_290px]">
+      <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
         <AddBookForm />
 
-        <aside className="rounded-2xl border border-black/[0.05] bg-[#f7f8f7] p-6">
+        <aside className="rounded-3xl border border-black/[0.05] bg-gradient-to-b from-[#f4f8f2] to-[#eaf1e6] p-6">
           <p className="font-handwriting text-2xl leading-snug text-[#0d4d33]">
             &ldquo;A book is a dream you hold in your hands.&rdquo;
           </p>

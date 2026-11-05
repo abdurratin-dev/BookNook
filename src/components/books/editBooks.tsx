@@ -4,6 +4,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { CheckCircle2, ChevronDown } from "lucide-react";
@@ -24,10 +25,10 @@ const CATEGORIES = [
   "Other / Unknown",
 ];
 
-const LABEL = "block text-sm font-medium text-slate-700";
+const LABEL = "block text-sm font-semibold text-slate-700";
 const INPUT =
-  "w-full rounded-lg border border-slate-200 bg-white py-2.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-colors focus:border-[#0d4d33] focus:ring-2 focus:ring-[#0d4d33]/15";
-const PAD = "px-3.5";
+  "w-full rounded-xl border border-slate-200 bg-white py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-colors focus:border-[#0d4d33] focus:ring-2 focus:ring-[#0d4d33]/15";
+const PAD = "px-4";
 const ERROR_TEXT = "mt-1.5 text-xs font-medium text-red-600";
 
 export function EditBook({ book }: { book: Book }) {
@@ -102,7 +103,7 @@ export function EditBook({ book }: { book: Book }) {
       <form>
         <DialogTrigger
           render={
-            <button className="flex items-center gap-1.5 rounded-lg border border-emerald-200 px-3 py-2 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50">
+            <button className="inline-flex items-center gap-1.5 rounded-xl border border-[#0d4d33]/25 bg-white px-3.5 py-2 text-xs font-bold text-[#0d4d33] transition-colors hover:bg-[#0d4d33]/5">
               <svg
                 className="h-3.5 w-3.5"
                 fill="none"
@@ -116,7 +117,10 @@ export function EditBook({ book }: { book: Book }) {
             </button>
           }
         />
-        <DialogContent className="sm:max-w-4xl">
+        <DialogContent className="sm:max-w-2xl">
+          <DialogTitle className="pr-8 font-display text-lg font-bold text-[#0d4d33]">
+            Edit Book
+          </DialogTitle>
           <form onSubmit={handleSubmit}>
             <div className="grid items-start gap-5 sm:grid-cols-2">
               {/* Book Title */}
@@ -273,19 +277,19 @@ export function EditBook({ book }: { book: Book }) {
                 Book edited.
               </div>
             )}
-            <div className="flex gap-5">
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row">
               <DialogClose
                 render={
-                  <Button className="h-10 mt-6 w-[45%] rounded-lg border bg-accent border-[#0d4d33] py-3 text-sm font-semibold text-[#0d4d33] transition-colors hover:bg-[#d1e1da]">
-                    Close
+                  <Button className="h-11 w-full rounded-xl border border-slate-200 bg-white py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 sm:w-auto sm:flex-1">
+                    Cancel
                   </Button>
                 }
               />
               <Button
                 type="submit"
-                className="h-10 mt-6 w-[45%] rounded-lg bg-[#0d4d33] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0a3d28]"
+                className="h-11 w-full rounded-xl bg-[#0d4d33] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0a3d28] sm:w-auto sm:flex-1"
               >
-                Edit
+                Save Changes
               </Button>
             </div>
           </form>

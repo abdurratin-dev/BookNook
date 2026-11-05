@@ -2,17 +2,27 @@
 
 import { authClient } from "@/lib/auth-client";
 import { BorrowsListType } from "@/types/borrowListType";
+import { BookUp } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import BorrowListSkeleton from "../skeleton/myBorrowsSkeleton";
 
-function StatusBadge({ status }: { status: any }) {
+function StatusBadge({ status }: { status: string }) {
   return (
     <span
-      className={`inline-flex items-center rounded-md px-3 py-1.5 text-[11px] font-bold ${status === "Active" ? "bg-[#d3f4e0] text-[#0f7b4f]" : "bg-[#e6efe9] text-[#41604f]"}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold tracking-wide ${
+        status === "Active"
+          ? "bg-[#d3f4e0] text-[#0f7b4f]"
+          : "bg-slate-100 text-slate-500"
+      }`}
     >
+      <span
+        className={`h-1.5 w-1.5 rounded-full ${
+          status === "Active" ? "bg-[#0f7b4f]" : "bg-slate-400"
+        }`}
+      />
       {status}
     </span>
   );
@@ -31,10 +41,10 @@ function ReturnButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`rounded-lg border px-4 py-2 text-xs font-bold transition-colors ${
+      className={`inline-flex h-9 items-center justify-center rounded-xl border px-4 text-xs font-bold transition-colors ${
         disabled
           ? "cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400"
-          : "border-[#0d4d33]/50 bg-white text-[#0d4d33] hover:bg-[#0d4d33] hover:text-white"
+          : "border-[#0d4d33]/40 bg-white text-[#0d4d33] hover:bg-[#0d4d33] hover:text-white"
       }`}
     >
       Return
@@ -160,17 +170,17 @@ export default function BorrowList() {
   }
 
   return (
-    <div className="mt-8 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+    <div className="mt-8 overflow-hidden rounded-3xl border border-black/[0.06] bg-white shadow-sm">
       {/* Desktop table */}
       {items.length > 0 ? (
         <table className="hidden w-full md:table">
           <thead>
-            <tr className="border-b border-slate-100 text-left text-xs font-bold text-[#0d4d33]">
-              <th className="px-6 py-4">Book</th>
-              <th className="px-6 py-4">Borrowed On</th>
-              <th className="px-6 py-4">Return Date</th>
-              <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4 text-right">Actions</th>
+            <tr className="border-b border-black/[0.05] bg-[#f7f9f4] text-left text-[11px] font-bold uppercase tracking-wider text-[#0d4d33]">
+              <th className="px-6 py-3.5">Book</th>
+              <th className="px-6 py-3.5">Owner</th>
+              <th className="px-6 py-3.5">Return Date</th>
+              <th className="px-6 py-3.5">Status</th>
+              <th className="px-6 py-3.5 text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -178,7 +188,7 @@ export default function BorrowList() {
               return (
                 <tr
                   key={borrowing._id}
-                  className="border-b border-slate-50 transition-colors last:border-0 hover:bg-slate-50/70"
+                  className="border-b border-black/[0.04] transition-colors last:border-0 hover:bg-[#f7f9f4]"
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -186,7 +196,7 @@ export default function BorrowList() {
                       <BookIdentity book={borrowing} />
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-500">
+                  <td className="max-w-[12rem] truncate px-6 py-4 text-sm text-slate-500">
                     {borrowing.bookowneremail}
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-500">
@@ -209,10 +219,22 @@ export default function BorrowList() {
           </tbody>
         </table>
       ) : (
-        <div className="px-4 py-16 text-center">
-          <p className="font-semibold text-gray-600">
-            No books added your borrows
+        <div className="flex flex-col items-center px-4 py-16 text-center">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#0d4d33]/10">
+            <BookUp className="h-5 w-5 text-[#0d4d33]" />
+          </span>
+          <p className="mt-4 font-semibold text-slate-700">
+            No borrowed books yet
           </p>
+          <p className="mt-1 text-sm text-slate-400">
+            Books you borrow will show up here with their return date.
+          </p>
+          <Link
+            href="/all-books"
+            className="mt-5 rounded-xl border border-[#0d4d33]/25 bg-white px-4 py-2 text-xs font-bold text-[#0d4d33] transition-colors hover:bg-[#0d4d33]/5"
+          >
+            Browse the catalogue
+          </Link>
         </div>
       )}
 
@@ -226,9 +248,9 @@ export default function BorrowList() {
                 <BookIdentity book={borrowing} />
 
                 <dl className="mt-3 grid grid-cols-2 gap-y-2 text-xs">
-                  <dt className="font-semibold text-slate-400">Borrowed On</dt>
-                  <dd className="text-right text-slate-500">
-                    {borrowing.receiveremail}
+                  <dt className="font-semibold text-slate-400">Owner</dt>
+                  <dd className="truncate text-right text-slate-500">
+                    {borrowing.bookowneremail}
                   </dd>
                   <dt className="font-semibold text-slate-400">Return Date</dt>
                   <dd className="text-right text-slate-500">

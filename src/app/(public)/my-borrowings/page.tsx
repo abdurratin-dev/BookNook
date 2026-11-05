@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { BookUp } from "lucide-react";
 import BorrowList from "@/components/borrows/BorrowList";
+import PageHeader from "@/components/layout/PageHeader";
 
 export const metadata: Metadata = {
   title: "My Borrows · BookNook",
@@ -9,10 +11,12 @@ export const metadata: Metadata = {
 export default function MyBorrowingsPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12">
-      <h1 className="font-display text-3xl font-bold text-[#174c43] sm:text-4xl">
-        My Borrows
-      </h1>
-      <p className="mt-2 text-sm text-slate-500">Books you have borrowed</p>
+      <PageHeader
+        icon={BookUp}
+        eyebrow="Loans"
+        title="My Borrows"
+        description="Books you have borrowed from BookNook — track the due date and return them when you are done."
+      />
 
       <BorrowList />
     </div>

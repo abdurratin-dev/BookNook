@@ -18,12 +18,12 @@ const CATEGORIES = [
 type Field = "title" | "author" | "category" | "image" | "description" | "page" | "copies";
 type Errors = Partial<Record<Field, string>>;
 
-const LABEL = "block text-sm font-medium text-slate-700";
+const LABEL = "block text-sm font-semibold text-slate-700";
 const REQUIRED = <span className="text-red-500">*</span>;
 /** Base field styles — padding is applied separately so it never conflicts. */
 const INPUT =
-  "w-full rounded-lg border border-slate-200 bg-white py-2.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-colors focus:border-[#0d4d33] focus:ring-2 focus:ring-[#0d4d33]/15";
-const PAD = "px-3.5";
+  "w-full rounded-xl border border-slate-200 bg-white py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-colors focus:border-[#0d4d33] focus:ring-2 focus:ring-[#0d4d33]/15";
+const PAD = "px-4";
 const ERROR_TEXT = "mt-1.5 text-xs font-medium text-red-600";
 
 export default function AddBookForm() {
@@ -68,7 +68,6 @@ export default function AddBookForm() {
       !description.trim() ||
       !copies.trim()
     ) {
-      console.log(description);
       return;
     }
 
@@ -108,7 +107,7 @@ export default function AddBookForm() {
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="rounded-2xl border border-black/[0.06] bg-white p-5 shadow-sm sm:p-6"
+      className="rounded-3xl border border-black/[0.06] bg-white p-5 shadow-sm sm:p-7"
     >
       <div className="grid items-start gap-5 sm:grid-cols-2">
         {/* Book Title */}
@@ -201,39 +200,48 @@ export default function AddBookForm() {
         </div>
 
         <div>
-          <label htmlFor="book-title" className={LABEL}>
+          <label htmlFor="book-page" className={LABEL}>
             Pages {REQUIRED}
           </label>
           <input
             id="book-page"
+            inputMode="numeric"
             value={page}
             onChange={(e) => {
               setPage(e.target.value);
               if (errors.page) setError("page");
             }}
-            placeholder="Enter book title"
-            className={cn("mt-2", INPUT, PAD, errors.title && "border-red-400")}
+            placeholder="e.g. 320"
+            className={cn("mt-2", INPUT, PAD, errors.page && "border-red-400")}
           />
-          {errors.title && <p className={ERROR_TEXT}>{errors.title}</p>}
+          {errors.page && <p className={ERROR_TEXT}>{errors.page}</p>}
         </div>
 
         <div>
-          <span className={LABEL}>Copies</span>
+          <label htmlFor="book-copies" className={LABEL}>
+            Copies {REQUIRED}
+          </label>
           <input
             id="book-copies"
+            inputMode="numeric"
             value={copies}
-            placeholder="Enter Availble Copies"
+            placeholder="How many copies are available?"
             onChange={(e) => {
               setCopies(e.target.value);
-              if (errors.image) setError("copies");
+              if (errors.copies) setError("copies");
             }}
-            className={cn("mt-2", INPUT, PAD, errors.image && "border-red-400")}
+            className={cn(
+              "mt-2",
+              INPUT,
+              PAD,
+              errors.copies && "border-red-400",
+            )}
           />
-          {errors.image && <p className={ERROR_TEXT}>{errors.image}</p>}
+          {errors.copies && <p className={ERROR_TEXT}>{errors.copies}</p>}
         </div>
 
         {/* User Name */}
-        <div>
+        <div className="sm:col-span-1">
           <label htmlFor="user-name" className={LABEL}>
             User Name {REQUIRED}
           </label>
@@ -268,14 +276,14 @@ export default function AddBookForm() {
             />
           </div>
         </div>
-        <div>
+        <div className="sm:col-span-2">
           <label htmlFor="description" className={LABEL}>
             Description {REQUIRED}
           </label>
           <textarea
             name="description"
             id="description"
-            rows={7}
+            rows={6}
             value={description}
             onChange={(e) => {
               setDescription(e.target.value);
@@ -296,7 +304,7 @@ export default function AddBookForm() {
       {success && (
         <div
           role="status"
-          className="mb-5 flex items-center gap-2 rounded-lg border border-[#0d4d33]/20 bg-[#0d4d33]/10 px-4 py-3 text-sm font-medium text-[#0d4d33]"
+          className="mt-6 flex items-center gap-2 rounded-xl border border-[#0d4d33]/20 bg-[#0d4d33]/10 px-4 py-3 text-sm font-semibold text-[#0d4d33]"
         >
           <CheckCircle2 className="h-4 w-4 shrink-0" />
           Book added to the library.
@@ -305,8 +313,9 @@ export default function AddBookForm() {
 
       <button
         type="submit"
-        className="mt-6 w-full rounded-lg bg-[#0d4d33] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0a3d28]"
+        className="mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#0d4d33] text-sm font-bold text-white shadow-md shadow-[#0d4d33]/25 transition-all hover:bg-[#0a3d28] active:scale-[0.99]"
       >
+        <CheckCircle2 className="h-4 w-4" />
         Add Book
       </button>
     </form>

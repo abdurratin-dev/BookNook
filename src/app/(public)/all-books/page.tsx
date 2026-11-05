@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { Library } from "lucide-react";
 import BookCatalog from "@/components/books/BookCatalog";
+import PageHeader from "@/components/layout/PageHeader";
 
 export const metadata: Metadata = {
   title: "All Books · BookNook",
@@ -9,13 +11,13 @@ export const metadata: Metadata = {
 export default function AllBooksPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12">
-      <h1 className="font-display text-3xl font-bold text-[#0d4d33] sm:text-4xl">
-        All Books
-      </h1>
-      <p className="mt-2 text-sm text-slate-500">
-        Browse our complete collection of books.
-      </p>
-      
+      <PageHeader
+        icon={Library}
+        eyebrow="Catalogue"
+        title="All Books"
+        description="Browse the complete BookNook collection — filter by category or search for your next read."
+      />
+
       <BookCatalog />
     </div>
   );

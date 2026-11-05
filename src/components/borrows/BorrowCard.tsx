@@ -7,11 +7,13 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { authClient } from "@/lib/auth-client";
 import { BorrowsListType } from "@/types/borrowListType";
+import { ArrowRight, BookOpen, CalendarDays } from "lucide-react";
 
 type BorrowBookModalProps = {
   book: Book;
@@ -19,56 +21,60 @@ type BorrowBookModalProps = {
 
 export default function BorrowCard({ book }: BorrowBookModalProps) {
   const [borrowing, setBorrowing] = useState(false);
-  const [days, setDays] = useState("7");
+  const [days, setDays] = useState("");
   const [fieldError, setFieldError] = useState(false);
   const { data: session } = authClient.useSession();
   const user = session?.user;
+
+  const today = new Date().toISOString().slice(0, 10);
+
   const handleBorrow = async () => {
     if (!user) {
       toast.error("Please sign in to borrow this book.");
       return;
     }
-    if (days === "7" || !days) {
+    if (!days) {
       setFieldError(true);
       return;
     }
-    const { data: jwttoken, error } = await authClient.token();
+    const { data: jwttoken } = await authClient.token();
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/borrows`,{
-        headers:{
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/borrows`, {
+        headers: {
           authorization: `elitebook ${jwttoken?.token}`,
-        }
+        },
       });
       const data: BorrowsListType[] = await res.json();
       const chackData = data.some(
         (bookU) =>
           bookU.bookId === book._id && bookU.receiveremail === user.email,
       );
-      console.log(chackData);
       if (chackData) {
-        toast.error("You are already added this book on your Borrow list");
+        toast.error("This book is already on your borrow list");
         return;
       }
-    } catch (error) {
-      console.log(error);
+    } catch {
+      /* listing check is best-effort */
     }
+
     setBorrowing(true);
     const date = new Date().toDateString().toString();
     const { image, title, author, category, description, email } = book;
-    const copies = {copies : String(Number(book.copies) - 1)};
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books/${book._id}`,{
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-             authorization: `elitebook ${jwttoken?.token}`,
-          },
-          body: JSON.stringify(copies),
-        },);
-    const data = await response.json();
+    const copies = { copies: String(Number(book.copies) - 1) };
+    await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/books/${book._id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `elitebook ${jwttoken?.token}`,
+      },
+      body: JSON.stringify(copies),
+    });
+
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/borrows`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" ,
+        headers: {
+          "Content-Type": "application/json",
           authorization: `elitebook ${jwttoken?.token}`,
         },
         body: JSON.stringify({
@@ -86,15 +92,15 @@ export default function BorrowCard({ book }: BorrowBookModalProps) {
         }),
       });
       if (!res.ok) throw new Error("Borrow failed");
-      const result = await res.json();
+      await res.json();
+      toast.success(`${title} borrowed successfully.`);
     } catch {
       toast.error("Could not borrow this book right now.");
     } finally {
       setBorrowing(false);
-      toast.success(`${title} borrowed successfully.`);
     }
   };
-  console.log(days);
+
   return (
     <Dialog>
       <form>
@@ -102,95 +108,98 @@ export default function BorrowCard({ book }: BorrowBookModalProps) {
           render={
             <Button
               type="button"
-              className="h-10 rounded-xl bg-[#0d4d33] px-8 py-3.5 text-sm font-bold text-white shadow-md shadow-[#0d4d33]/25 transition-all duration-300 hover:bg-[#126344] active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#0d4d33] px-6 text-[15px] font-bold text-white shadow-md shadow-[#0d4d33]/25 transition-all duration-300 hover:bg-[#0a3d28] active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60 sm:min-w-[250px]"
             >
-              {"Borrow This Book"}
+              <BookOpen className="h-4 w-4" />
+              Borrow This Book
+              <ArrowRight className="h-4 w-4" />
             </Button>
           }
         />
+
         <DialogContent className="sm:max-w-lg">
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="relative w-full rounded-2xl border border-slate-100 bg-white p-6 shadow-2xl sm:p-10">
-              {/* Header */}
-              <div className="mb-8 flex items-center justify-between">
-                <h2 className="text-2xl font-extrabold text-[#0d4d33] sm:text-3xl">
-                  Borrow Book
-                </h2>
+          <DialogTitle className="pr-8 font-display text-lg font-bold text-[#0d4d33]">
+            Borrow this book
+          </DialogTitle>
 
-                <button
-                  // onClick={onClose}
-                  aria-label="Close modal"
-                  className="rounded-full p-2 text-slate-500 transition hover:bg-slate-100 hover:text-[#0d4d33]"
-                ></button>
-              </div>
+          {/* Book summary */}
+          <div className="flex items-center gap-4 rounded-2xl border border-black/[0.05] bg-[#f7f9f4] p-3">
+            <div className="h-[124px] w-[96px] shrink-0 overflow-hidden rounded-xl border border-black/[0.06] bg-slate-100">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={book.image}
+                alt={book.title}
+                className="h-full w-full object-cover"
+              />
+            </div>
 
-              {/* Book Information */}
-              <div className="mb-6 flex items-center gap-5">
-                <div className="h-[140px] w-[115px] shrink-0 overflow-hidden rounded-xl bg-slate-100">
-                  <img
-                    src={book.image}
-                    alt={book.title}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
+            <div className="min-w-0">
+              <h3 className="text-base font-bold leading-snug text-[#0d4d33] sm:text-lg">
+                {book.title}
+              </h3>
+              <p className="mt-1 truncate text-sm text-slate-500">
+                {book.author}
+              </p>
+              <span className="mt-2.5 inline-flex rounded-full bg-[#0d4d33]/10 px-2.5 py-1 text-[11px] font-bold text-[#0d4d33]">
+                {book.category}
+              </span>
+            </div>
+          </div>
 
-                <div className="min-w-0">
-                  <h3 className="mb-2 text-lg font-bold text-[#0d4d33] sm:text-xl">
-                    {book.title}
-                  </h3>
+          {/* Return date */}
+          <div>
+            <label
+              htmlFor="borrowingDate"
+              className="block text-sm font-bold text-slate-700"
+            >
+              Return date
+            </label>
+            <div className="relative mt-2">
+              <CalendarDays className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <input
+                type="date"
+                id="borrowingDate"
+                min={today}
+                value={days}
+                onChange={(e) => {
+                  setDays(e.target.value);
+                  if (fieldError) setFieldError(false);
+                }}
+                className={`h-12 w-full rounded-xl border bg-white pl-11 pr-4 text-sm font-semibold text-slate-700 outline-none transition-colors ${
+                  fieldError
+                    ? "border-red-400 focus:ring-2 focus:ring-red-200"
+                    : "border-slate-200 focus:border-[#0d4d33] focus:ring-2 focus:ring-[#0d4d33]/15"
+                }`}
+              />
+            </div>
+            {fieldError && (
+              <p className="mt-1.5 text-xs font-medium text-red-600">
+                Please select a return date
+              </p>
+            )}
+          </div>
 
-                  <p className="text-sm font-medium text-slate-500 sm:text-base">
-                    {book.author}
-                  </p>
-                </div>
-              </div>
-
-              {/* Return Days */}
-              <div className="mb-8">
-                <label
-                  htmlFor="borrowingDays"
-                  className="mb-3 block text-base font-bold text-[#0d4d33]"
-                >
-                  Return Date
-                </label>
-
-                <div className="relative">
-                  <input
-                    type="date"
-                    id="borrowingDate"
-                    value={days}
-                    onChange={(e) => setDays(e.target.value)}
-                    className={`h-[66px] w-full appearance-none rounded-xl border ${fieldError ? "border-red-500" : "border-slate-200"} bg-white px-6 pr-12 text-base font-semibold text-slate-600 outline-none transition focus:border-[#0d4d33] focus:ring-2 focus:ring-[#0d4d33]/10`}
-                  />
-                </div>
-                {fieldError && (
-                  <p className="text-red-500 mt-2">Please select return date</p>
-                )}
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-col-reverse gap-4 sm:flex-row sm:justify-between">
-                <DialogClose
-                  render={
-                    <Button
-                      type="button"
-                      className="h-[68px] w-full rounded-xl border-2 border-slate-200 bg-white text-lg font-bold text-[#0d4d33] transition hover:border-[#0d4d33] hover:bg-slate-50 sm:w-[45%]"
-                    >
-                      Cancel
-                    </Button>
-                  }
-                />
-
+          {/* Actions */}
+          <div className="flex flex-col-reverse gap-3 sm:flex-row">
+            <DialogClose
+              render={
                 <Button
                   type="button"
-                  disabled={borrowing}
-                  onClick={handleBorrow}
-                  className={`h-[68px] w-full rounded-xl bg-[#006b50] text-lg font-bold text-white shadow-md transition hover:bg-[#00563f] active:scale-[0.98] sm:w-[45%] px-4`}
+                  className="h-11 w-full rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 sm:w-auto sm:flex-1"
                 >
-                  {borrowing ? "Borrowing…" : "Confirm Borrow"}
+                  Cancel
                 </Button>
-              </div>
-            </div>
+              }
+            />
+
+            <Button
+              type="button"
+              disabled={borrowing}
+              onClick={handleBorrow}
+              className="h-11 w-full rounded-xl bg-[#0d4d33] px-4 text-sm font-bold text-white shadow-md shadow-[#0d4d33]/25 transition-all hover:bg-[#0a3d28] active:scale-[0.98] sm:w-auto sm:flex-1"
+            >
+              {borrowing ? "Borrowing…" : "Confirm Borrow"}
+            </Button>
           </div>
         </DialogContent>
       </form>

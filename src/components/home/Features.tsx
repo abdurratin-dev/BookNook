@@ -23,7 +23,7 @@ const CATEGORIES = [
 ];
 
 const CARD =
-  "flex h-full flex-col rounded-2xl border border-black/[0.05] bg-[#f7f8f7] p-5 sm:p-6";
+  "flex h-full flex-col rounded-3xl border border-black/[0.06] bg-[#f7f8f7] p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-lg hover:shadow-[#0d4d33]/10 sm:p-6";
 const ICON = "h-7 w-7 text-[#0d4d33]";
 const HEADING = "mt-4 text-lg font-bold text-slate-900";
 const LINK =

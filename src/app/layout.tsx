@@ -61,7 +61,26 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <Suspense fallback={<Loading />}>
-          <Toaster position="top-left" reverseOrder={true} />
+          <Toaster
+            position="top-center"
+            reverseOrder={true}
+            toastOptions={{
+              style: {
+                borderRadius: "12px",
+                fontSize: "14px",
+                fontWeight: 500,
+                boxShadow:
+                  "0 10px 30px -12px rgba(13, 77, 51, 0.35)",
+                padding: "10px 14px",
+              },
+              success: {
+                iconTheme: { primary: "#0d4d33", secondary: "#ffffff" },
+              },
+              error: {
+                iconTheme: { primary: "#b91c1c", secondary: "#ffffff" },
+              },
+            }}
+          />
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />

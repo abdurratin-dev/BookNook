@@ -59,7 +59,7 @@ export default function NotFound() {
 
           <p className="mt-3 text-sm leading-7 text-slate-500 sm:text-base">
             Looks like this page has gone missing from our bookshelf.
-            Don't worry, there are plenty of amazing books waiting for you!
+            Don&apos;t worry, there are plenty of amazing books waiting for you!
           </p>
         </div>
 

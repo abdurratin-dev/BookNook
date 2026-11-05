@@ -1,9 +1,11 @@
 "use client";
 
 import { EditBook } from "@/components/books/editBooks";
+import PageHeader from "@/components/layout/PageHeader";
 import MyBooksSkeleton from "@/components/skeleton/myBookSkeleton";
 import { Book } from "@/data/books";
 import { authClient } from "@/lib/auth-client";
+import { BookMarked, Plus, Search, SearchX, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -34,10 +36,8 @@ export default function MyBooksPage() {
   const myBooks = booksData.filter((book) => book.email === user?.email);
 
   const filteredBooks = myBooks.filter((book) => {
-    if (!search.trim()) return myBooks;
-    const filterBooks = book.title.toLowerCase().includes(search.toLowerCase());
-    console.log(filterBooks);
-    return filterBooks;
+    if (!search.trim()) return true;
+    return book.title.toLowerCase().includes(search.toLowerCase());
   });
   const hendleDeleteBook = async (_id: string, title: string) => {
     const { data: jwttoken, error } = await authClient.token();
@@ -80,13 +80,13 @@ export default function MyBooksPage() {
     <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12">
       <div>
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-[#174c43]">
-            My Books
-          </h1>
-          <p className="mt-2 text-sm text-gray-500">
-            Books you have added to the library
-          </p>
+        <div className="mb-7">
+          <PageHeader
+            icon={BookMarked}
+            eyebrow="Your Shelf"
+            title="My Books"
+            description="Books you have added to the BookNook library — edit their details or remove them."
+          />
         </div>
 
         {loading ? (
@@ -94,18 +94,9 @@ export default function MyBooksPage() {
         ) : (
           <div>
             {/* Search and Add */}
-            <div className="mb-5 flex items-center gap-3">
-              <div className="flex flex-1 items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm transition focus-within:border-emerald-600">
-                <svg
-                  className="h-5 w-5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <circle cx="11" cy="11" r="7" />
-                  <path d="m20 20-4-4" />
-                </svg>
+            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="flex h-11 flex-1 items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 shadow-sm transition focus-within:border-[#0d4d33] focus-within:ring-2 focus-within:ring-[#0d4d33]/15">
+                <Search className="h-4.5 w-4.5 shrink-0 text-slate-400" />
 
                 <input
                   type="text"
@@ -114,24 +105,16 @@ export default function MyBooksPage() {
                   onChange={(e) => {
                     setSearch(e.target.value);
                   }}
-                  className="w-full bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
+                  className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
                 />
               </div>
 
               <Link
                 href="/add-book"
-                className="flex h-12 px-5 shrink-0 items-center justify-center rounded-xl border border-emerald-100 bg-white text-emerald-700 shadow-sm transition hover:bg-emerald-50"
+                className="flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#0d4d33] px-5 text-sm font-bold text-white shadow-md shadow-[#0d4d33]/25 transition-all hover:bg-[#0a3d28] active:scale-[0.99]"
                 title="Add Book"
               >
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 5v14M5 12h14" />
-                </svg>
+                <Plus className="h-4 w-4" />
                 Add Book
               </Link>
             </div>
@@ -139,7 +122,7 @@ export default function MyBooksPage() {
             {/* Books Table */}
             <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
               {/* Desktop Header */}
-              <div className="hidden grid-cols-[2fr_1.1fr_1fr_1.2fr] gap-4 border-b border-gray-100 bg-[#fcfcfa] px-6 py-4 text-sm font-semibold text-[#286c5e] md:grid">
+              <div className="hidden grid-cols-[2fr_1.1fr_1fr_1.2fr] gap-4 border-b border-black/[0.05] bg-[#f7f9f4] px-6 py-3.5 text-[11px] font-bold uppercase tracking-wider text-[#0d4d33] md:grid">
                 <span>Books</span>
                 <span>Category</span>
                 <span>Added On</span>
@@ -151,18 +134,20 @@ export default function MyBooksPage() {
                 filteredBooks.map((book) => (
                   <div
                     key={book._id}
-                    className="grid grid-cols-1 gap-4 border-b border-gray-100 px-4 py-4 transition hover:bg-[#fafcf9] last:border-0 sm:px-6 md:grid-cols-[2fr_1.1fr_1fr_1.2fr] md:items-center"
+                    className="grid grid-cols-1 gap-4 border-b border-black/[0.04] px-4 py-4 transition-colors last:border-0 hover:bg-[#f7f9f4] sm:px-6 md:grid-cols-[2fr_1.1fr_1fr_1.2fr] md:items-center"
                   >
                     {/* Book Information */}
                     <div className="flex items-center gap-4">
                       <div
-                        className={`flex h-[65px] w-[48px] shrink-0 flex-col items-center justify-center rounded-md border border-black/10 p-1 text-center shadow-sm`}
+                        className={`flex h-[65px] w-[48px] shrink-0 flex-col items-center justify-center overflow-hidden rounded-lg border border-black/10 bg-slate-50 p-1 text-center shadow-sm`}
                       >
                         <Image
-                          src={book?.image || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmQSVoOtqLdG19ckCeLFCvJS5IKrnnqS8yLsgCeg0LhIDVQpOh1y8hXhk&s=10"}
+                          src={book?.image || "/next.svg"}
                           alt={book?.title}
                           width={50}
                           height={50}
+                          unoptimized
+                          className="h-full w-full rounded-md object-cover"
                         />
                       </div>
 
@@ -202,18 +187,26 @@ export default function MyBooksPage() {
 
                       <button
                         onClick={() => hendleDeleteBook(book?._id, book.title)}
-                        className="rounded-lg border border-red-200 px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-50"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-white px-3 py-2 text-xs font-bold text-red-600 transition-colors hover:border-red-300 hover:bg-red-50"
                       >
+                        <Trash2 className="h-3.5 w-3.5" />
                         Delete
                       </button>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="px-4 py-16 text-center">
-                  <p className="font-semibold text-gray-600">No books found!</p>
-                  <p className="mt-1 text-sm text-gray-400">
-                    Try searching with another keyword.
+                <div className="flex flex-col items-center px-4 py-16 text-center">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#0d4d33]/10">
+                    <SearchX className="h-5 w-5 text-[#0d4d33]" />
+                  </span>
+                  <p className="mt-4 font-semibold text-slate-700">
+                    {search ? "No books match your search" : "No books yet!"}
+                  </p>
+                  <p className="mt-1 text-sm text-slate-400">
+                    {search
+                      ? "Try searching with another keyword."
+                      : "Add your first book to the library."}
                   </p>
                 </div>
               )}

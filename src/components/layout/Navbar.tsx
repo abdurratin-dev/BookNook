@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { BookOpen, Menu, Search, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { BookOpen, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NAV_LINKS } from "@/data/navigation";
 import { authClient } from "@/lib/auth-client";
@@ -12,47 +12,57 @@ import { NavbarPopOver } from "../popover/NavbarPopOver";
 export default function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
   const { data: session } = authClient.useSession();
   const user = session?.user;
 
+  // Subtle elevation once the page is scrolled.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 border-b border-black/[0.06] bg-[#fbfcfa]/95 backdrop-blur-sm">
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
+    <header
+      className={cn(
+        "sticky top-0 z-50 border-b border-black/[0.05] bg-[#fbfcfa]/90 backdrop-blur-md transition-shadow duration-300",
+        scrolled && "shadow-[0_6px_24px_-16px_rgba(13,77,51,0.55)]",
+      )}
+    >
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:px-6 lg:gap-5">
         {/* Brand */}
         <Link
           href="/"
-          className="flex items-center gap-2"
+          className="group flex shrink-0 items-center gap-2.5"
           onClick={() => setOpen(false)}
         >
-          <BookOpen className="text-[#0d4d33]" />
-          <span className="text-lg font-extrabold tracking-tight text-[rgb(13,77,51)]">
+          <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#0d4d33] text-white shadow-sm shadow-[#0d4d33]/25 transition-transform duration-300 group-hover:-rotate-6">
+            <BookOpen className="h-[18px] w-[18px]" strokeWidth={2.2} />
+          </span>
+          <span className="font-display text-lg font-bold tracking-tight text-[#0d4d33]">
             BookNook
           </span>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden flex-1 items-center justify-center gap-7 md:flex">
+        <nav className="hidden flex-1 items-center justify-center gap-1 md:flex">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                "relative py-1 text-[13px] transition-colors",
+                "relative rounded-xl px-3 py-2 text-[13px] font-medium transition-colors duration-200",
                 isActive(link.href)
-                  ? "font-semibold text-[#0d4d33]"
-                  : "text-slate-500 hover:text-[#0d4d33]",
+                  ? "bg-[#0d4d33]/10 font-semibold text-[#0d4d33]"
+                  : "text-slate-500 hover:bg-slate-100 hover:text-[#0d4d33]",
               )}
             >
               {link.label}
-              <span
-                className={cn(
-                  "absolute -bottom-1.5 left-0 h-[2px] w-full rounded-full bg-[#0d4d33] transition-opacity",
-                  isActive(link.href) ? "opacity-100" : "opacity-0",
-                )}
-              />
             </Link>
           ))}
         </nav>
@@ -61,21 +71,21 @@ export default function Navbar() {
         <div className="ml-auto flex items-center gap-2 md:gap-3">
           {user ? (
             <div className="hidden md:flex">
-              <NavbarPopOver user={user} />
+              <NavbarPopOver user={user} onNavigate={() => setOpen(false)} />
             </div>
           ) : (
             <>
               <Link
                 href="/login"
-                className="hidden rounded-lg border border-[#0d4d33]/35 bg-white px-4 py-2 text-[13px] font-medium text-[#0d4d33] transition-colors hover:bg-[#0d4d33]/5 md:inline-flex"
+                className="hidden rounded-xl border border-[#0d4d33]/25 bg-white px-4 py-2 text-[13px] font-semibold text-[#0d4d33] transition-colors hover:border-[#0d4d33] hover:bg-[#0d4d33]/5 md:inline-flex"
               >
                 Login
               </Link>
               <Link
                 href="/signup"
-                className="hidden rounded-lg bg-[#0d4d33] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#0a3d28] md:inline-flex"
+                className="hidden rounded-xl bg-[#0d4d33] px-4 py-2 text-[13px] font-semibold text-white shadow-sm shadow-[#0d4d33]/25 transition-colors hover:bg-[#0a3d28] md:inline-flex"
               >
-                Register
+                Get Started
               </Link>
             </>
           )}
@@ -86,7 +96,7 @@ export default function Navbar() {
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
-            className="grid h-9 w-9 place-items-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 md:hidden"
+            className="grid h-10 w-10 place-items-center rounded-xl border border-black/[0.06] bg-white text-slate-600 transition-colors hover:text-[#0d4d33] md:hidden"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -95,7 +105,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="border-t border-black/[0.06] bg-[#fbfcfa] px-4 py-3 md:hidden">
+        <div className="animate-in fade-in-0 slide-in-from-top-2 border-t border-black/[0.05] bg-[#fbfcfa]/95 px-4 pb-5 pt-3 backdrop-blur-md md:hidden">
           <nav className="flex flex-col gap-1">
             {NAV_LINKS.map((link) => (
               <Link
@@ -103,7 +113,7 @@ export default function Navbar() {
                 href={link.href}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "rounded-lg px-3 py-2 text-sm transition-colors",
+                  "rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors",
                   isActive(link.href)
                     ? "bg-[#0d4d33]/10 font-semibold text-[#0d4d33]"
                     : "text-slate-600 hover:bg-slate-100",
@@ -113,28 +123,29 @@ export default function Navbar() {
               </Link>
             ))}
           </nav>
-          <div className="mt-3 flex gap-2 sm:hidden">
-            {user ? (
-              <NavbarPopOver user={user} />
-            ) : (
-              <>
-                <Link
-                  href="/login"
-                  onClick={() => setOpen(false)}
-                  className="flex-1 rounded-lg border border-[#0d4d33]/35 bg-white px-4 py-2 text-center text-sm font-medium text-[#0d4d33]"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/signup"
-                  onClick={() => setOpen(false)}
-                  className="flex-1 rounded-lg bg-[#0d4d33] px-4 py-2 text-center text-sm font-semibold text-white"
-                >
-                  Register
-                </Link>
-              </>
-            )}
-          </div>
+
+          {user ? (
+            <div className="mt-3 border-t border-black/[0.05] pt-3">
+              <NavbarPopOver user={user} onNavigate={() => setOpen(false)} />
+            </div>
+          ) : (
+            <div className="mt-3 flex gap-2.5 border-t border-black/[0.05] pt-3 sm:hidden">
+              <Link
+                href="/login"
+                onClick={() => setOpen(false)}
+                className="flex-1 rounded-xl border border-[#0d4d33]/25 bg-white px-4 py-2.5 text-center text-sm font-semibold text-[#0d4d33] transition-colors hover:bg-[#0d4d33]/5"
+              >
+                Login
+              </Link>
+              <Link
+                href="/signup"
+                onClick={() => setOpen(false)}
+                className="flex-1 rounded-xl bg-[#0d4d33] px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-[#0a3d28]"
+              >
+                Get Started
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </header>

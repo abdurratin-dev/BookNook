@@ -59,7 +59,7 @@ export default function Hero() {
           {/* Primary CTA */}
           <Link
             href="/all-books"
-            className="group mt-7 inline-flex w-fit items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-[#0d4d33] shadow-lg shadow-black/25 transition-colors hover:bg-white/90"
+            className="group mt-7 inline-flex w-fit items-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-[#0d4d33] shadow-lg shadow-black/25 transition-all hover:bg-white/90 active:scale-[0.98]"
           >
             Browse Books
             <FaLongArrowAltRight className="transition-transform group-hover:translate-x-1" />

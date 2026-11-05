@@ -3,6 +3,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
@@ -15,10 +16,10 @@ import { cn } from "@/lib/utils";
 type Field = "name" | "image";
 type Errors = Partial<Record<Field, string>>;
 
-const LABEL = "block text-sm font-medium text-slate-700";
+const LABEL = "block text-sm font-semibold text-slate-700";
 const INPUT =
-  "w-full rounded-lg border border-slate-200 bg-white py-2.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-colors focus:border-[#0d4d33] focus:ring-2 focus:ring-[#0d4d33]/15";
-const PAD = "px-3.5";
+  "w-full rounded-xl border border-slate-200 bg-white py-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-colors focus:border-[#0d4d33] focus:ring-2 focus:ring-[#0d4d33]/15";
+const PAD = "px-4";
 const ERROR_TEXT = "mt-1.5 text-xs font-medium text-red-600";
 
 export default function ProfileEditCard() {
@@ -63,7 +64,7 @@ export default function ProfileEditCard() {
       <form>
         <DialogTrigger
           render={
-            <button className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#286c5e] px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#214d46]">
+            <button className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#0d4d33] px-5 text-sm font-semibold text-white shadow-md shadow-[#0d4d33]/25 transition-all hover:bg-[#0a3d28] active:scale-[0.99]">
               <svg
                 className="h-4 w-4"
                 fill="none"
@@ -77,10 +78,13 @@ export default function ProfileEditCard() {
             </button>
           }
         />
-        <DialogContent className="sm:max-w-4xl">
+        <DialogContent className="sm:max-w-lg">
+          <DialogTitle className="pr-8 font-display text-lg font-bold text-[#0d4d33]">
+            Edit Profile
+          </DialogTitle>
           <form onSubmit={handleSubmit}>
             <div className="grid items-start gap-5 sm:grid-cols-2">
-              {/* Book Title */}
+              {/* Name */}
               <div>
                 <label htmlFor="name" className={LABEL}>
                   Name
@@ -92,7 +96,7 @@ export default function ProfileEditCard() {
                     setName(e.target.value);
                     if (errors.name) setError("name");
                   }}
-                  placeholder="Enter book title"
+                  placeholder="Your display name"
                   className={cn(
                     "mt-2",
                     INPUT,
@@ -109,7 +113,7 @@ export default function ProfileEditCard() {
                   id="image"
                   type="text"
                   value={image || ""}
-                  placeholder="Enter book image url"
+                  placeholder="https://… profile image"
                   onChange={(e) => {
                     setImage(e.target.value);
                     if (errors.image) setError("image");
@@ -127,25 +131,25 @@ export default function ProfileEditCard() {
             {success && (
               <div
                 role="status"
-                className="mb-5 flex items-center gap-2 rounded-lg border border-[#0d4d33]/20 bg-[#0d4d33]/10 px-4 py-3 text-sm font-medium text-[#0d4d33]"
+                className="mt-5 flex items-center gap-2 rounded-xl border border-[#0d4d33]/20 bg-[#0d4d33]/10 px-4 py-3 text-sm font-semibold text-[#0d4d33]"
               >
                 <CheckCircle2 className="h-4 w-4 shrink-0" />
-                Book edited.
+                Profile updated.
               </div>
             )}
-            <div className="flex gap-5">
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row">
               <DialogClose
                 render={
-                  <Button className="h-10 mt-6 w-[45%] rounded-lg border bg-accent border-[#0d4d33] py-3 text-sm font-semibold text-[#0d4d33] transition-colors hover:bg-[#d1e1da]">
-                    Close
+                  <Button className="h-11 w-full rounded-xl border border-slate-200 bg-white py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 sm:w-auto sm:flex-1">
+                    Cancel
                   </Button>
                 }
               />
               <Button
                 type="submit"
-                className="h-10 mt-6 w-[45%] rounded-lg bg-[#0d4d33] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0a3d28]"
+                className="h-11 w-full rounded-xl bg-[#0d4d33] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0a3d28] sm:w-auto sm:flex-1"
               >
-                Edit
+                Save Changes
               </Button>
             </div>
           </form>

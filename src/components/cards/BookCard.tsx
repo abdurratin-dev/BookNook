@@ -9,7 +9,7 @@ export default function BookCard({ book }: { book: Book }) {
   const [failed, setFailed] = useState(false);
 
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-2.5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#0d4d33]/30 hover:shadow-xl hover:shadow-[#0d4d33]/10">
+    <article className="group relative flex flex-col overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-2.5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#0d4d33]/30 hover:shadow-xl hover:shadow-[#0d4d33]/10">
       {/* Book Cover */}
       <Link
         href={`/all-books/${book._id}`}
@@ -53,8 +53,8 @@ export default function BookCard({ book }: { book: Book }) {
           By {book.author}
         </p>
 
-        <p className="mt-1 mb-2 truncate text-xs font-medium text-slate-500">
-          Added on {book.name}
+        <p className="mt-0.5 mb-2 truncate text-[11px] font-medium text-slate-400">
+          Added by {book.name}
         </p>
 
         {/* View Details Button */}
